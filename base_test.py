@@ -1,8 +1,8 @@
-from capivaraprojects.greeneyes.repository.base import Base
-from capivaraprojects.greeneyes.database.Plant import Plant
-from capivaraprojects.greeneyes.database.Disease import Disease
-from capivaraprojects.greeneyes.database.Type import Type
-from capivaraprojects.greeneyes.database.Image import Image
+from repository.base import Base
+from database.Plant import Plant
+from database.Disease import Disease
+from database.Type import Type
+from database.Image import Image
 
 
 def test_connection():

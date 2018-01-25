@@ -90,7 +90,7 @@ class ImageRepository(Base):
         session.delete(imageDB)
         session.commit()
         session.flush()
-        if (not session.query(ImageDB).filter_by(url=imageDB.url).count()):
+        if (not session.query(ImageDB).filter_by(id=imageDB.id).count()):
             status = True
         session.close()
         return status
