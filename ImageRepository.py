@@ -5,6 +5,7 @@ from models.Plant import Plant
 from repository.base import Base
 from sqlalchemy import or_
 import base64
+import uuid
 
 
 class ImageRepository(Base):
@@ -165,6 +166,52 @@ class ImageRepository(Base):
              image.url)
         fh = open(filepath, 'rb')
         content = fh.read()
+        fh.close()
 
         image.url = base64.encodestring(content).decode('utf-8')
+        return image
+
+    def saveImage(self, image=Image(), imagesDir="", extension=".JPG"):
+        """
+        (Image, str, str) -> (Image)
+            Method used to save images considering image url field
+        """
+        size = "large"
+        if image.size == 1:
+            size = "thumb"
+        elif image.size == 2:
+            size = "medium"
+        elif image.size == 3:
+            size = "large"
+        filename = str(uuid.uuid4())
+        filepath = "{}/{}/{}/{}/{}".format(
+             imagesDir,
+             size,
+             image.disease.plant.commonName.replace(
+                 ' ',
+                 '_').replace(
+                     '(',
+                     '_').replace(
+                         ')',
+                         '_'),
+             image.disease.scientificName.replace(
+                 " ",
+                 "_").replace(
+                     ";",
+                     "").replace(
+                         "(",
+                         "_").replace(
+                             ")",
+                             "_").replace(
+                                 "<i>",
+                                 "").replace(
+                                     "</i>",
+                                     ""),
+             filename + extension)
+        fh = open(filepath, 'wb')
+        fh.write(base64.decodestring(image.url.encode('utf-8')))
+        fh.close()
+
+        image.url = filename + extension
+
         return image
