@@ -21,13 +21,13 @@ class DiseaseRepository(Base):
         """
         Add disease to database
         """
-	diseaseDB = DiseaseDB(disease=disease)
-	session = self.session_factory()
-	session.add(diseaseDB)
-	session.flush()
-	session.refresh(diseaseDB)
-	session.commit()
-	return Disease(diseaseDB.id,
+        diseaseDB = DiseaseDB(disease=disease)
+        session = self.session_factory()
+        session.add(diseaseDB)
+        session.flush()
+        session.refresh(diseaseDB)
+        session.commit()
+        return Disease(diseaseDB.id,
                         Plant(diseaseDB.plant.id,
                               diseaseDB.plant.scientificName,
                               diseaseDB.plant.commonName),
@@ -35,50 +35,64 @@ class DiseaseRepository(Base):
                         diseaseDB.commonName)
 
     def update(self, disease=Disease()):
-	"""
-	Update database disease
-	"""
-	session = self.session_factory()
-	diseaseDB = session.query(DiseaseDB).filter_by(id=disease.id).first()
-	dic = {}
-	if (diseaseDB.plant.id != disease.plant.id):
-            dic['idPlant'] = disease.plant.id
-	if (diseaseDB.scientificName != disease.scientificName):
-            dic['scientificName'] = disease.scientificName
-	if (diseaseDB.commonName != disease.commonName):
-            dic['commonName'] = disease.commonName
-	if (dic != {}):
-            session.query(DiseaseDB).filter_by(id=disease.id).update(dic)
-            session.commit()
-            session.flush()
-            session.refresh(diseaseDB)
-	return Disease(diseaseDB.id,
-                        Plant(diseaseDB.plant.id,
-                              diseaseDB.plant.scientificName,
-                              diseaseDB.plant.commonName),
-                        diseaseDB.scientificName,
-                        diseaseDB.commonName)
+        """
+        Update database disease
+        """
+        session = self.session_factory()
+        diseaseDB = session.query(DiseaseDB).filter_by(id=disease.id).first()
+        dic = {}
+        if (diseaseDB.plant.id != disease.plant.id):
+                  dic['idPlant'] = disease.plant.id
+        if (diseaseDB.scientificName != disease.scientificName):
+                  dic['scientificName'] = disease.scientificName
+        if (diseaseDB.commonName != disease.commonName):
+                  dic['commonName'] = disease.commonName
+        if (dic != {}):
+                  session.query(DiseaseDB).filter_by(id=disease.id).update(dic)
+                  session.commit()
+                  session.flush()
+                  session.refresh(diseaseDB)
+        return Disease(diseaseDB.id,
+                              Plant(diseaseDB.plant.id,
+                                    diseaseDB.plant.scientificName,
+                                    diseaseDB.plant.commonName),
+                              diseaseDB.scientificName,
+                              diseaseDB.commonName)
 
     def delete(self, disease=Disease()):
         """
-	Delete object disease from database disease
-	"""
-	status = False
-	session = self.session_factory()
-	diseaseDB = session.query(DiseaseDB).filter_by(id=disease.id).first()
-	session.delete(diseaseDB)
-	session.commit()
-	session.flush()
-	if (not session.query(DiseaseDB).filter_by(id=diseaseDB.id).count()):
-            status = True
-	session.close()
-	return status
+        Delete object disease from database disease
+        """
+        status = False
+        session = self.session_factory()
+        diseaseDB = session.query(DiseaseDB).filter_by(id=disease.id).first()
+        session.delete(diseaseDB)
+        session.commit()
+        session.flush()
+        if (not session.query(DiseaseDB).filter_by(id=diseaseDB.id).count()):
+                  status = True
+        session.close()
+        return status
 
     def search(self, disease=Disease(), pageSize=10, offset=0):
         """
-	search by a list of objects
-	"""
-	session = self.session_factory()
-	return session.query(DiseaseDB).filter(or_(
-			DiseaseDB.scientificName.like('%'+disease.scientificName+'%'),
-			DiseaseDB.commonName == disease.commonName)).slice(offset, pageSize).all()
+        search by a list of objects
+        """
+        session = self.session_factory()
+        return session.query(DiseaseDB).filter(or_(
+            DiseaseDB.scientificName.like('%'+disease.scientificName+'%'),
+            DiseaseDB.commonName == disease.commonName)).slice(offset, pageSize).all()
+
+    def searchByID(self, id):
+        """
+        (Int) -> (Disease)
+        Method used to get disease object by ID
+        """
+        session = self.session_factory()
+        diseaseDB = session.query(DiseaseDB).get(id)
+        return Disease(diseaseDB.id,
+                     Plant(diseaseDB.plant.id,
+                           diseaseDB.plant.scientificName,
+                           diseaseDB.plant.commonName),
+                     diseaseDB.scientificName,
+                     diseaseDB.commonName)
