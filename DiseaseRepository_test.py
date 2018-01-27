@@ -36,4 +36,3 @@ def test_delete():
                                     'Apple scab test update')
     result = diseaseRep.delete(disease)
     assert result is True
-
