@@ -19,7 +19,7 @@ class DiseaseRepository(Base):
 
     def create(self, disease=Disease()):
         """
-        Add disease to database
+        (Disease) -> (Disease)
         """
         diseaseDB = DiseaseDB(disease=disease)
         session = self.session_factory()
@@ -36,7 +36,7 @@ class DiseaseRepository(Base):
 
     def update(self, disease=Disease()):
         """
-        Update database disease
+        (Disease) -> (Disease)
         """
         session = self.session_factory()
         diseaseDB = session.query(DiseaseDB).filter_by(id=disease.id).first()
@@ -61,7 +61,7 @@ class DiseaseRepository(Base):
 
     def delete(self, disease=Disease()):
         """
-        Delete object disease from database disease
+        (Plant) -> (Boolean)
         """
         status = False
         session = self.session_factory()
@@ -76,17 +76,20 @@ class DiseaseRepository(Base):
 
     def search(self, disease=Disease(), pageSize=10, offset=0):
         """
-        search by a list of objects
+        (Disease, pageSize, offset) -> {'total': int, 'content':[Disease]}
         """
         session = self.session_factory()
-        return session.query(DiseaseDB).filter(or_(
-            DiseaseDB.scientificName.like('%'+disease.scientificName+'%'),
-            DiseaseDB.commonName == disease.commonName)).slice(offset, pageSize).all()
+        query = session.query(DiseaseDB).filter(or_(
+                        DiseaseDB.scientificName.like('%'+disease.scientificName+'%'),
+                        DiseaseDB.commonName == disease.commonName))
+        content = query.slice(offset, pageSize).all()
+        total = query.count()
+        dic = {'total': total, 'content': content}
+        return dic
 
     def searchByID(self, id):
         """
         (Int) -> (Disease)
-        Method used to get disease object by ID
         """
         session = self.session_factory()
         diseaseDB = session.query(DiseaseDB).get(id)
