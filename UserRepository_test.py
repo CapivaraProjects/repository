@@ -1,6 +1,6 @@
 from UserRepository import UserRepository
 import models.User
-import models.Type
+#import models.Type
 
 userRep = UserRepository(
                 'capivara',
@@ -11,11 +11,12 @@ userRep = UserRepository(
 
 def test_insert():
     user = models.User.User(0,
+							0,
+							#models.Type.Type(1,'thumb','image-size'),
                             'tester@test.com',
                             'tester',
                             'password',
                             'ashdiuhsduiahu',
-                            models.Type.Type(1,'thumb','image-size'),
                             '12/12/12',
                             '')
     assert userRep.create(user).username == 'tester'
@@ -27,11 +28,12 @@ def test_search():
 
 def test_update():
     user = models.User.User(0,
+							0,
+                            #models.Type.Type(1,'thumb','image-size'),
                             'tester@test.com',
                             'tester update',
                             'password',
                             'ashdiuhsduiahu',
-                            models.Type.Type(1,'thumb','image-size'),
                             '12/01/18',
                             '13/12/18')
     user = userRep.update(user)
@@ -39,11 +41,12 @@ def test_update():
 
 def test_delete():
     user = models.User.User(0,
+							0,
+                            #models.Type.Type(1,'thumb','image-size'),
                             'tester@test.com',
                             'tester update',
                             'password',
                             'ashdiuhsduiahu',
-                            models.Type.Type(1,'thumb','image-size'),
                             '12/01/18',
                             '13/12/18')
     result = userRep.delete(user)
