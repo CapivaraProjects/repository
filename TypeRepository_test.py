@@ -25,7 +25,7 @@ def test_insert():
 	assert typeRep.create(models.Type.Type(
 				0,
 				"admin",
-				"user")).value == 'value test'
+				"user")).value == 'admin'
 
 def test_update():
 	typeRep = TypeRepository(
