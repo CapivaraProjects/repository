@@ -3,6 +3,7 @@ from models.User import User
 from models.Type import Type
 from repository.base import Base
 from sqlalchemy import or_
+from tools.Cryptography import Crypto
 
 class UserRepository(Base):
     """
@@ -28,8 +29,8 @@ class UserRepository(Base):
         session.refresh(userDB)
         session.commit()
         return User(userDB.id,
-					userDB.idType,
-					#Type(userDB.type.id,
+                    userDB.idType,
+                    #Type(userDB.type.id,
                     #    userDB.type.value,
                     #    userDB.type.description),
                     userDB.email,
@@ -116,11 +117,35 @@ class UserRepository(Base):
         return User(userDB.id,
                     userDB.idType,
                     #Type(userDB.type.id,
-					#	userDB.type.value,
-					#	userDB.type.description),
+                    #   userDB.type.value,
+                    #   userDB.type.description),
                     userDB.email,
                     userDB.username,
                     userDB.password,
                     userDB.salt,
                     userDB.dateInsertion,
                     userDB.dateUpdate)
+
+
+    def authentication(self, user=User()):
+        """
+        (User) -> (User)
+        """
+        session = self.session_factory()
+        #userDB = session.query(UserDB).filter(UserDB.username == user.username).all()
+        userDB = session.query(UserDB).filter_by(username=user.username).first()
+        crypto = Crypto()
+        decriptedTest = crypto.decrypt(userDB.salt, userDB.password)
+        decriptedUser = crypto.decrypt(userDB.salt, user.password)
+
+        if (decriptedTest == decriptedUser):
+            return User(userDB.id,
+                        userDB.idType,
+                        userDB.email,
+                        userDB.username,
+                        userDB.password,
+                        userDB.salt,
+                        userDB.dateInsertion,
+                        userDB.dateUpdate)
+        else:
+            return User()
