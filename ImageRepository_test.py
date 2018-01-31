@@ -15,7 +15,7 @@ def test_search():
             'green_eyes')
     images = imgRep.search(
         image=models.Image.Image(
-            url="FREC_Scab_"))
+            url="FREC_Scab_"))['content']
     for image in images:
         print(image.disease.plant.commonName)
     assert 'FREC_Scab_' in images[0].url
