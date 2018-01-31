@@ -2,8 +2,7 @@ from database.Text import Text as TextDB
 from models.Text import Text
 from repository.base import Base
 from sqlalchemy import or_
-import base64
-import uuid
+
 
 class TextRepository(Base):
     """
@@ -85,8 +84,19 @@ class TextRepository(Base):
         (Text, pageSize, offset) -> [Text]
         """
         session = self.session_factory()
-        return session.query(TextDB).filter(or_(
+        query = session.query(TextDB).filter(or_(
                 TextDB.language.like('%'+text.language+'%'),
                 TextDB.tag.like('%'+text.tag+'%'),
                 TextDB.value.like('%'+text.value+'%'),
-                TextDB.description.like('%'+text.description+'%'))).slice(offset, pageSize).all()
+                TextDB.description.like('%'+text.description+'%')))
+        content = query.slice(offset, pageSize).all()
+        total = query.count()
+        texts = []
+        for textDB in content:
+            texts.append(Text(
+                    textDB.id,
+                    textDB.language,
+                    textDB.tag,
+                    textDB.value,
+                    textDB.description))
+        return {'total': total, 'content': texts}

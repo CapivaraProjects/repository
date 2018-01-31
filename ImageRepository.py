@@ -102,10 +102,28 @@ class ImageRepository(Base):
         (Image, pageSize, offset) -> [Image]
         """
         session = self.session_factory()
-        return session.query(ImageDB).filter(or_(
-                ImageDB.url.like('%'+image.url+'%'),
-                ImageDB.description == image.description,
-                ImageDB.source == image.source)).slice(offset, pageSize).all()
+        query = session.query(ImageDB).filter(
+                or_(
+                    ImageDB.url.like('%'+image.url+'%'),
+                    ImageDB.description == image.description,
+                    ImageDB.source == image.source))
+        content = query.slice(offset, pageSize).all()
+        total = query.count()
+        images = []
+        for imageDB in content:
+            images.append(Image(
+                     imageDB.id,
+                     Disease(imageDB.disease.id,
+                             Plant(imageDB.disease.plant.id,
+                                   imageDB.disease.plant.scientificName,
+                                   imageDB.disease.plant.commonName),
+                             imageDB.disease.scientificName,
+                             imageDB.disease.commonName),
+                     imageDB.url,
+                     imageDB.description,
+                     imageDB.source,
+                     imageDB.size))
+        return {'total': total, 'content': images}
 
     def searchByID(self, id):
         """
