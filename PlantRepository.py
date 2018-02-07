@@ -1,7 +1,7 @@
 from database.Plant import Plant as PlantDB
 from models.Plant import Plant
 from repository.base import Base
-from sqlalchemy import or_
+from sqlalchemy import and_
 
 
 class PlantRepository(Base):
@@ -71,10 +71,10 @@ class PlantRepository(Base):
         (Plant, pageSize, offset) -> {'total': int, 'content':[Plant]}
         """
         session = self.session_factory()
-        query = session.query(PlantDB).filter(or_(
+        query = session.query(PlantDB).filter(and_(
                         PlantDB.scientificName.like(
                             '%'+plant.scientificName+'%'),
-                        PlantDB.commonName == plant.commonName))
+                        PlantDB.commonName.like('%'+plant.commonName+'%')))
         content = query.slice(offset, pageSize).all()
         total = query.count()
         plants = []

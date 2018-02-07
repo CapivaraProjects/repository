@@ -3,7 +3,7 @@ from models.Image import Image
 from models.Disease import Disease
 from models.Plant import Plant
 from repository.base import Base
-from sqlalchemy import or_
+from sqlalchemy import and_
 import base64
 import uuid
 
@@ -103,10 +103,10 @@ class ImageRepository(Base):
         """
         session = self.session_factory()
         query = session.query(ImageDB).filter(
-                or_(
+                and_(
                     ImageDB.url.like('%'+image.url+'%'),
-                    ImageDB.description == image.description,
-                    ImageDB.source == image.source))
+                    ImageDB.description.like('%'+image.description+'%'),
+                    ImageDB.source.like('%'+image.source+'%')))
         content = query.slice(offset, pageSize).all()
         total = query.count()
         images = []

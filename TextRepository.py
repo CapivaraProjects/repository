@@ -1,7 +1,7 @@
 from database.Text import Text as TextDB
 from models.Text import Text
 from repository.base import Base
-from sqlalchemy import or_
+from sqlalchemy import and_
 
 
 class TextRepository(Base):
@@ -84,7 +84,7 @@ class TextRepository(Base):
         (Text, pageSize, offset) -> [Text]
         """
         session = self.session_factory()
-        query = session.query(TextDB).filter(or_(
+        query = session.query(TextDB).filter(and_(
                 TextDB.language.like('%'+text.language+'%'),
                 TextDB.tag.like('%'+text.tag+'%'),
                 TextDB.value.like('%'+text.value+'%'),

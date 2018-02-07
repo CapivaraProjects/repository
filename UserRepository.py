@@ -1,7 +1,7 @@
 from database.User import User as UserDB
 from models.User import User
 from repository.base import Base
-from sqlalchemy import or_
+from sqlalchemy import and_
 from tools.Cryptography import Crypto
 
 
@@ -92,11 +92,11 @@ class UserRepository(Base):
         (User, pageSize, offset) -> {'total': int, 'content':[User]}
         """
         session = self.session_factory()
-        query = session.query(UserDB).filter(or_(
+        query = session.query(UserDB).filter(and_(
                         UserDB.email.like('%'+user.email+'%'),
                         UserDB.username.like('%'+user.username+'%'),
-                        UserDB.dateInsertion == user.dateInsertion,
-                        UserDB.dateUpdate == user.dateUpdate))
+                        UserDB.dateInsertion.like('%'+user.dateInsertion+'%'),
+                        UserDB.dateUpdate.like('%'+user.dateUpdate+'%')))
         content = query.slice(offset, pageSize).all()
         users = []
         for userDB in content:

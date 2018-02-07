@@ -1,7 +1,7 @@
 from database.Type import Type as TypeDB
 from models.Type import Type
 from repository.base import Base
-from sqlalchemy import or_
+from sqlalchemy import and_
 
 
 class TypeRepository(Base):
@@ -71,9 +71,9 @@ class TypeRepository(Base):
                 (Type, pageSize, offset) -> [Type]
         """
         session = self.session_factory()
-        query = session.query(TypeDB).filter(or_(
-                    TypeDB.value == type.value,
-                    TypeDB.description == type.description))
+        query = session.query(TypeDB).filter(and_(
+                    TypeDB.value.like('%'+type.value+'%'),
+                    TypeDB.description.like('%'+type.description+'%')))
         total = query.count()
         content = query.slice(offset, pageSize).all()
         types = []
