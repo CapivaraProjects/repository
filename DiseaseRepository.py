@@ -2,7 +2,7 @@ from database.Disease import Disease as DiseaseDB
 from models.Disease import Disease
 from models.Plant import Plant
 from repository.base import Base
-from sqlalchemy import or_
+from sqlalchemy import and_
 
 
 class DiseaseRepository(Base):
@@ -80,10 +80,10 @@ class DiseaseRepository(Base):
         (Disease, pageSize, offset) -> {'total': int, 'content':[Disease]}
         """
         session = self.session_factory()
-        query = session.query(DiseaseDB).filter(or_(
+        query = session.query(DiseaseDB).filter(and_(
                         DiseaseDB.scientificName.like(
                             '%'+disease.scientificName+'%'),
-                        DiseaseDB.commonName == disease.commonName))
+                        DiseaseDB.commonName.like('%'+disease.commonName+'%')))
         content = query.slice(offset, pageSize).all()
         total = query.count()
         diseases = []
