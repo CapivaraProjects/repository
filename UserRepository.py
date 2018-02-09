@@ -137,7 +137,7 @@ class UserRepository(Base):
                 username=user.username).first()
         crypto = Crypto()
         decriptedTest = crypto.decrypt(userDB.salt, userDB.password)
-        decriptedUser = crypto.decrypt(userDB.salt, user.password)
+        decriptedUser = crypto.decrypt(user.salt, user.password)
 
         if (decriptedTest == decriptedUser):
             return User(userDB.id,
