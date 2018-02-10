@@ -74,7 +74,7 @@ class TextRepository(Base):
         session.delete(textDB)
         session.commit()
         session.flush()
-        if (not session.query(TextDB).filter_by(value=textDB.value).count()):
+        if (not session.query(TextDB).filter_by(id=textDB.id).count()):
             status = True
         session.close()
         return status
@@ -100,3 +100,16 @@ class TextRepository(Base):
                     textDB.value,
                     textDB.description))
         return {'total': total, 'content': texts}
+
+
+    def searchByID(self, textId):
+        """
+        (Int) -> (Text)
+        """
+        session = self.session_factory()
+        textDB = session.query(TextDB).get(textId)
+        return Text(textDB.id,
+                    textDB.language,
+                    textDB.tag,
+                    textDB.value,
+                    textDB.description)

@@ -68,6 +68,33 @@ class TypeRepository(Base):
 
     def search(self, type=Type(), pageSize=10, offset=0):
         """
+
+        (Type, pageSize, offset) -> [Type]
+        """
+        session = self.session_factory()
+        query = session.query(TypeDB).filter(and_(
+            TypeDB.value.like('%'+type.value+'%'),
+            TypeDB.description.like('%'+type.description+'%')))
+        content = query.slice(offset, pageSize).all()
+        total = query.count()
+        types = []
+        for typeDB in content:
+            types.append(Type(
+                typeDB.id,
+                typeDB.value,
+                typeDB.description))
+        return {'total': total, 'content': types}
+
+    def searchByID(self, typeId):
+        """
+        (Int) -> (Type)
+        """
+        session = self.session_factory()
+        typeDB = session.query(TypeDB).get(typeId)
+        return Type(typeDB.id,
+                    typeDB.value,
+                    typeDB.description)
+        """
                 (Type, pageSize, offset) -> [Type]
         """
         session = self.session_factory()
@@ -81,3 +108,4 @@ class TypeRepository(Base):
             types.append(Type(typeDB.id, typeDB.value, typeDB.description))
 
         return {'total': total, 'content': types}
+
