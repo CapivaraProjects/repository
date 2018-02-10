@@ -101,6 +101,7 @@ class TextRepository(Base):
                     textDB.description))
         return {'total': total, 'content': texts}
 
+
     def searchByID(self, textId):
         """
         (Int) -> (Text)
