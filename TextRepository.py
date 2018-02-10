@@ -1,8 +1,9 @@
 from database.Text import Text as TextDB
 from models.Text import Text
 from repository.base import Base
-from sqlalchemy import and_
-
+from sqlalchemy import or_
+import base64
+import uuid
 
 class TextRepository(Base):
     """
@@ -74,7 +75,7 @@ class TextRepository(Base):
         session.delete(textDB)
         session.commit()
         session.flush()
-        if (not session.query(TextDB).filter_by(id=textDB.id).count()):
+        if (not session.query(TextDB).filter_by(value=textDB.value).count()):
             status = True
         session.close()
         return status
@@ -84,31 +85,8 @@ class TextRepository(Base):
         (Text, pageSize, offset) -> [Text]
         """
         session = self.session_factory()
-        query = session.query(TextDB).filter(and_(
+        return session.query(TextDB).filter(or_(
                 TextDB.language.like('%'+text.language+'%'),
                 TextDB.tag.like('%'+text.tag+'%'),
                 TextDB.value.like('%'+text.value+'%'),
-                TextDB.description.like('%'+text.description+'%')))
-        content = query.slice(offset, pageSize).all()
-        total = query.count()
-        texts = []
-        for textDB in content:
-            texts.append(Text(
-                    textDB.id,
-                    textDB.language,
-                    textDB.tag,
-                    textDB.value,
-                    textDB.description))
-        return {'total': total, 'content': texts}
-
-    def searchByID(self, textId):
-        """
-        (Int) -> (Text)
-        """
-        session = self.session_factory()
-        textDB = session.query(TextDB).get(textId)
-        return Text(textDB.id,
-                    textDB.language,
-                    textDB.tag,
-                    textDB.value,
-                    textDB.description)
+                TextDB.description.like('%'+text.description+'%'))).slice(offset, pageSize).all()

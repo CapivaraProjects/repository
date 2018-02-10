@@ -21,7 +21,7 @@ def test_search():
 			'5432',
 			'green_eyes')
 	types = typeRep.search(
-			type = models.Type.Type(value="value test"))['content']
+			type = models.Type.Type(value="value test"))
 	for type in types:
 		print(type.id)
 		assert 'value test' in types[0].value

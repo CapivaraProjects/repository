@@ -23,7 +23,7 @@ def test_search():
             '127.0.0.1',
             '5432',
             'green_eyes')
-    texts = textRep.search(text=models.Text.Text(value="test value"))['content']
+    texts = textRep.search(text=models.Text.Text(value="test value"))
     for text in texts:
         print(text.id)
     assert 'test value' in texts[0].value
