@@ -3,7 +3,9 @@ from models.Image import Image
 from models.Disease import Disease
 from models.Plant import Plant
 from repository.base import Base
-from sqlalchemy import or_
+from sqlalchemy import and_
+import base64
+import uuid
 
 
 class ImageRepository(Base):
@@ -100,7 +102,134 @@ class ImageRepository(Base):
         (Image, pageSize, offset) -> [Image]
         """
         session = self.session_factory()
-        return session.query(ImageDB).filter(or_(
-                ImageDB.url.like('%'+image.url+'%'),
-                ImageDB.description == image.description,
-                ImageDB.source == image.source)).slice(offset, pageSize).all()
+        query = session.query(ImageDB).filter(
+                and_(
+                    ImageDB.url.like('%'+image.url+'%'),
+                    ImageDB.description.like('%'+image.description+'%'),
+                    ImageDB.source.like('%'+image.source+'%')))
+        content = query.slice(offset, pageSize).all()
+        total = query.count()
+        images = []
+        for imageDB in content:
+            images.append(Image(
+                     imageDB.id,
+                     Disease(imageDB.disease.id,
+                             Plant(imageDB.disease.plant.id,
+                                   imageDB.disease.plant.scientificName,
+                                   imageDB.disease.plant.commonName),
+                             imageDB.disease.scientificName,
+                             imageDB.disease.commonName),
+                     imageDB.url,
+                     imageDB.description,
+                     imageDB.source,
+                     imageDB.size))
+        return {'total': total, 'content': images}
+
+    def searchByID(self, id):
+        """
+        (Int) -> (Image)
+        Method used to get image object by ID
+        """
+        session = self.session_factory()
+        imageDB = session.query(ImageDB).get(id)
+        return Image(imageDB.id,
+                     Disease(imageDB.disease.id,
+                             Plant(imageDB.disease.plant.id,
+                                   imageDB.disease.plant.scientificName,
+                                   imageDB.disease.plant.commonName),
+                             imageDB.disease.scientificName,
+                             imageDB.disease.commonName),
+                     imageDB.url,
+                     imageDB.description,
+                     imageDB.source,
+                     imageDB.size)
+
+    def getImageBase64(self, image=Image(), imagesDir=""):
+        """
+        (Image, String) -> (Image)
+        Method used to get image considering plant common name,
+        disease scientific name, size image and url and
+        convert it to base64 in url field
+        """
+        size = "large"
+        if image.size == 1:
+            size = "thumb"
+        elif image.size == 2:
+            size = "medium"
+        elif image.size == 3:
+            size = "large"
+        filepath = "{}/{}/{}/{}/{}".format(
+             imagesDir,
+             size,
+             image.disease.plant.commonName.replace(
+                 ' ',
+                 '_').replace(
+                     '(',
+                     '_').replace(
+                         ')',
+                         '_'),
+             image.disease.scientificName.replace(
+                 " ",
+                 "_").replace(
+                     ";",
+                     "").replace(
+                         "(",
+                         "_").replace(
+                             ")",
+                             "_").replace(
+                                 "<i>",
+                                 "").replace(
+                                     "</i>",
+                                     ""),
+             image.url)
+        fh = open(filepath, 'rb')
+        content = fh.read()
+        fh.close()
+
+        image.url = base64.encodestring(content).decode('utf-8')
+        return image
+
+    def saveImage(self, image=Image(), imagesDir="", extension=".JPG"):
+        """
+        (Image, str, str) -> (Image)
+            Method used to save images considering image url field
+        """
+        size = "large"
+        if image.size == 1:
+            size = "thumb"
+        elif image.size == 2:
+            size = "medium"
+        elif image.size == 3:
+            size = "large"
+        filename = str(uuid.uuid4())
+        filepath = "{}/{}/{}/{}/{}".format(
+             imagesDir,
+             size,
+             image.disease.plant.commonName.replace(
+                 ' ',
+                 '_').replace(
+                     '(',
+                     '_').replace(
+                         ')',
+                         '_'),
+             image.disease.scientificName.replace(
+                 " ",
+                 "_").replace(
+                     ";",
+                     "").replace(
+                         "(",
+                         "_").replace(
+                             ")",
+                             "_").replace(
+                                 "<i>",
+                                 "").replace(
+                                     "</i>",
+                                     ""),
+             filename + extension)
+        fh = open(filepath, 'wb')
+        fh.write(base64.decodestring(image.url.encode('utf-8')))
+        fh.close()
+
+        image.url = filename + extension
+
+        return image
