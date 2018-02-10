@@ -94,7 +94,7 @@ class TypeRepository(Base):
         return Type(typeDB.id,
                     typeDB.value,
                     typeDB.description)
-
+        """
                 (Type, pageSize, offset) -> [Type]
         """
         session = self.session_factory()
