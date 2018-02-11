@@ -2,7 +2,6 @@ from UserRepository import UserRepository
 import models.User
 from tools.Cryptography import Crypto
 
-#import models.Type
 
 userRep = UserRepository(
                 'capivara',
@@ -14,10 +13,10 @@ crypto = Crypto()
 salt = crypto.generateRandomSalt()
 ciphredPassword = crypto.encrypt(salt, 'test')
 
+
 def test_insert():
     user = models.User.User(0,
                             0,
-                            #models.Type.Type(1,'thumb','image-size'),
                             'tester@test.com',
                             'tester',
                             ciphredPassword,
@@ -26,26 +25,36 @@ def test_insert():
                             '')
     assert userRep.create(user).username == 'tester'
 
+
 def test_search():
     users = userRep.search(user=models.User.User(username='tester'))
     print('return {0} lines'.format(len(users)))
     assert 'tester' in users['content'][0].username
 
+
 def test_authentication():
-    user = models.User.User(username='tester', password=ciphredPassword)
+    crypto = Crypto()
+    salt = crypto.generateRandomSalt()
+    ciphredPassword = crypto.encrypt(salt, 'test')
+    user = models.User.User(username='tester',
+                            salt=salt, password=ciphredPassword)
     authUser = userRep.authentication(user)
     assert authUser.username == user.username
 
+
 def test_authentication_fail():
+    crypto = Crypto()
+    salt = crypto.generateRandomSalt()
     wrongPassword = crypto.encrypt(salt, 'wrong')
-    user = models.User.User(username='tester', password=wrongPassword)
+    user = models.User.User(username='tester', salt=salt,
+                            password=wrongPassword)
     authUser = userRep.authentication(user)
     assert authUser.username == ""
+
 
 def test_update():
     user = models.User.User(0,
                             0,
-                            #models.Type.Type(1,'thumb','image-size'),
                             'tester@test.com',
                             'tester update',
                             ciphredPassword,
@@ -55,10 +64,10 @@ def test_update():
     user = userRep.update(user)
     assert user.username == 'tester update'
 
+
 def test_delete():
     user = models.User.User(0,
                             0,
-                            #models.Type.Type(1,'thumb','image-size'),
                             'tester@test.com',
                             'tester update',
                             ciphredPassword,
