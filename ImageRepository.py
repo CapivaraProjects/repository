@@ -132,6 +132,8 @@ class ImageRepository(Base):
         """
         session = self.session_factory()
         imageDB = session.query(ImageDB).get(id)
+        if (imageDB is None):
+            raise Exception("Image not found!")
         return Image(imageDB.id,
                      Disease(imageDB.disease.id,
                              Plant(imageDB.disease.plant.id,
