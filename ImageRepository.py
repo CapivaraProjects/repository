@@ -3,7 +3,7 @@ from models.Image import Image
 from models.Disease import Disease
 from models.Plant import Plant
 from repository.base import Base
-from sqlalchemy import or_
+from sqlalchemy import and_
 import base64
 import uuid
 
@@ -102,10 +102,28 @@ class ImageRepository(Base):
         (Image, pageSize, offset) -> [Image]
         """
         session = self.session_factory()
-        return session.query(ImageDB).filter(or_(
-                ImageDB.url.like('%'+image.url+'%'),
-                ImageDB.description == image.description,
-                ImageDB.source == image.source)).slice(offset, pageSize).all()
+        query = session.query(ImageDB).filter(
+                and_(
+                    ImageDB.url.like('%'+image.url+'%'),
+                    ImageDB.description.like('%'+image.description+'%'),
+                    ImageDB.source.like('%'+image.source+'%')))
+        content = query.slice(offset, pageSize).all()
+        total = query.count()
+        images = []
+        for imageDB in content:
+            images.append(Image(
+                     imageDB.id,
+                     Disease(imageDB.disease.id,
+                             Plant(imageDB.disease.plant.id,
+                                   imageDB.disease.plant.scientificName,
+                                   imageDB.disease.plant.commonName),
+                             imageDB.disease.scientificName,
+                             imageDB.disease.commonName),
+                     imageDB.url,
+                     imageDB.description,
+                     imageDB.source,
+                     imageDB.size))
+        return {'total': total, 'content': images}
 
     def searchByID(self, id):
         """
@@ -114,6 +132,8 @@ class ImageRepository(Base):
         """
         session = self.session_factory()
         imageDB = session.query(ImageDB).get(id)
+        if (imageDB is None):
+            raise Exception("Image not found!")
         return Image(imageDB.id,
                      Disease(imageDB.disease.id,
                              Plant(imageDB.disease.plant.id,

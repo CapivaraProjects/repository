@@ -1,18 +1,19 @@
 from database.Plant import Plant as PlantDB
 from models.Plant import Plant
 from repository.base import Base
-from sqlalchemy import or_
+from sqlalchemy import and_
+
 
 class PlantRepository(Base):
     """
     Plant repository, dedicated to realize all functions related to plants
     """
     def __init__(self,
-                dbuser="",
-                dbpass="",
-                dbhost="",
-                port="",
-                dbname=""):
+                 dbuser="",
+                 dbpass="",
+                 dbhost="",
+                 port="",
+                 dbname=""):
         super().__init__(dbuser, dbpass, dbhost, port, dbname)
 
     def create(self, plant=Plant()):
@@ -26,8 +27,8 @@ class PlantRepository(Base):
         session.refresh(plantDB)
         session.commit()
         return Plant(plantDB.id,
-                    plantDB.scientificName,
-                    plantDB.commonName)
+                     plantDB.scientificName,
+                     plantDB.commonName)
 
     def update(self, plant=Plant()):
         """
@@ -45,10 +46,10 @@ class PlantRepository(Base):
             session.commit()
             session.flush()
             session.refresh(plantDB)
-            
+
         return Plant(plantDB.id,
-                    plantDB.scientificName,
-                    plantDB.commonName)
+                     plantDB.scientificName,
+                     plantDB.commonName)
 
     def delete(self, plant=Plant()):
         """
@@ -70,12 +71,19 @@ class PlantRepository(Base):
         (Plant, pageSize, offset) -> {'total': int, 'content':[Plant]}
         """
         session = self.session_factory()
-        query = session.query(PlantDB).filter(or_(
-                        PlantDB.scientificName.like('%'+plant.scientificName+'%'),
-                        PlantDB.commonName == plant.commonName))
+        query = session.query(PlantDB).filter(and_(
+                        PlantDB.scientificName.like(
+                            '%'+plant.scientificName+'%'),
+                        PlantDB.commonName.like('%'+plant.commonName+'%')))
         content = query.slice(offset, pageSize).all()
         total = query.count()
-        dic = {'total': total, 'content': content}
+        plants = []
+        for plantDB in content:
+            plants.append(Plant(
+                     plantDB.id,
+                     plantDB.scientificName,
+                     plantDB.commonName))
+        dic = {'total': total, 'content': plants}
         return dic
 
     def searchByID(self, plantId):
@@ -85,5 +93,5 @@ class PlantRepository(Base):
         session = self.session_factory()
         plantDB = session.query(PlantDB).get(plantId)
         return Plant(plantDB.id,
-                    plantDB.scientificName,
-                    plantDB.commonName)
+                     plantDB.scientificName,
+                     plantDB.commonName)

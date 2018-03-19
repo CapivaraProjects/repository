@@ -2,7 +2,8 @@ from database.Disease import Disease as DiseaseDB
 from models.Disease import Disease
 from models.Plant import Plant
 from repository.base import Base
-from sqlalchemy import or_
+from sqlalchemy import and_
+
 
 class DiseaseRepository(Base):
     """
@@ -28,11 +29,11 @@ class DiseaseRepository(Base):
         session.refresh(diseaseDB)
         session.commit()
         return Disease(diseaseDB.id,
-                        Plant(diseaseDB.plant.id,
-                              diseaseDB.plant.scientificName,
-                              diseaseDB.plant.commonName),
-                        diseaseDB.scientificName,
-                        diseaseDB.commonName)
+                       Plant(diseaseDB.plant.id,
+                             diseaseDB.plant.scientificName,
+                             diseaseDB.plant.commonName),
+                       diseaseDB.scientificName,
+                       diseaseDB.commonName)
 
     def update(self, disease=Disease()):
         """
@@ -42,22 +43,22 @@ class DiseaseRepository(Base):
         diseaseDB = session.query(DiseaseDB).filter_by(id=disease.id).first()
         dic = {}
         if (diseaseDB.plant.id != disease.plant.id):
-                  dic['idPlant'] = disease.plant.id
+            dic['idPlant'] = disease.plant.id
         if (diseaseDB.scientificName != disease.scientificName):
-                  dic['scientificName'] = disease.scientificName
+            dic['scientificName'] = disease.scientificName
         if (diseaseDB.commonName != disease.commonName):
-                  dic['commonName'] = disease.commonName
+            dic['commonName'] = disease.commonName
         if (dic != {}):
-                  session.query(DiseaseDB).filter_by(id=disease.id).update(dic)
-                  session.commit()
-                  session.flush()
-                  session.refresh(diseaseDB)
+            session.query(DiseaseDB).filter_by(id=disease.id).update(dic)
+            session.commit()
+            session.flush()
+            session.refresh(diseaseDB)
         return Disease(diseaseDB.id,
-                              Plant(diseaseDB.plant.id,
-                                    diseaseDB.plant.scientificName,
-                                    diseaseDB.plant.commonName),
-                              diseaseDB.scientificName,
-                              diseaseDB.commonName)
+                       Plant(diseaseDB.plant.id,
+                             diseaseDB.plant.scientificName,
+                             diseaseDB.plant.commonName),
+                       diseaseDB.scientificName,
+                       diseaseDB.commonName)
 
     def delete(self, disease=Disease()):
         """
@@ -70,7 +71,7 @@ class DiseaseRepository(Base):
         session.commit()
         session.flush()
         if (not session.query(DiseaseDB).filter_by(id=diseaseDB.id).count()):
-                  status = True
+            status = True
         session.close()
         return status
 
@@ -79,12 +80,22 @@ class DiseaseRepository(Base):
         (Disease, pageSize, offset) -> {'total': int, 'content':[Disease]}
         """
         session = self.session_factory()
-        query = session.query(DiseaseDB).filter(or_(
-                        DiseaseDB.scientificName.like('%'+disease.scientificName+'%'),
-                        DiseaseDB.commonName == disease.commonName))
+        query = session.query(DiseaseDB).filter(and_(
+                        DiseaseDB.scientificName.like(
+                            '%'+disease.scientificName+'%'),
+                        DiseaseDB.commonName.like('%'+disease.commonName+'%')))
         content = query.slice(offset, pageSize).all()
         total = query.count()
-        dic = {'total': total, 'content': content}
+        diseases = []
+        for diseaseDB in content:
+            diseases.append(Disease(
+                       diseaseDB.id,
+                       Plant(diseaseDB.plant.id,
+                             diseaseDB.plant.scientificName,
+                             diseaseDB.plant.commonName),
+                       diseaseDB.scientificName,
+                       diseaseDB.commonName))
+        dic = {'total': total, 'content': diseases}
         return dic
 
     def searchByID(self, id):
@@ -94,8 +105,8 @@ class DiseaseRepository(Base):
         session = self.session_factory()
         diseaseDB = session.query(DiseaseDB).get(id)
         return Disease(diseaseDB.id,
-                     Plant(diseaseDB.plant.id,
-                           diseaseDB.plant.scientificName,
-                           diseaseDB.plant.commonName),
-                     diseaseDB.scientificName,
-                     diseaseDB.commonName)
+                       Plant(diseaseDB.plant.id,
+                             diseaseDB.plant.scientificName,
+                             diseaseDB.plant.commonName),
+                       diseaseDB.scientificName,
+                       diseaseDB.commonName)
