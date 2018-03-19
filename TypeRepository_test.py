@@ -2,6 +2,18 @@ from TypeRepository import TypeRepository
 import models.Type
 
 
+def test_insert():
+        typeRep = TypeRepository(
+                        'capivara',
+                        'test',
+                        '127.0.0.1',
+                        '5432',
+                        'green_eyes')
+        assert typeRep.create(models.Type.Type(
+                                0,
+                                "admin",
+                                "user")).value == 'admin'
+
 def test_search():
 	typeRep = TypeRepository(
 			'capivara',
@@ -10,22 +22,10 @@ def test_search():
 			'5432',
 			'green_eyes')
 	types = typeRep.search(
-			type = models.Type.Type(value="value test"))
+			type = models.Type.Type(value="admin"))
 	for type in types:
 		print(type.id)
-		assert 'value test' in types[0].value
-
-def test_insert():
-	typeRep = TypeRepository(
-			'capivara',
-			'test',
-			'127.0.0.1',
-			'5432',
-			'green_eyes')
-	assert typeRep.create(models.Type.Type(
-				0,
-				"admin",
-				"user")).value == 'value test'
+		assert 'admin' in types[0].value
 
 def test_update():
 	typeRep = TypeRepository(
