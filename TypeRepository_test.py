@@ -35,6 +35,7 @@ def test_search():
 			'127.0.0.1',
 			'5432',
 			'green_eyes')
+<<<<<<< HEAD
 	types = typeRep.search(
 <<<<<<< HEAD
 			type = models.Type.Type(value="admin"))
@@ -47,6 +48,12 @@ def test_search():
 		print(type.id)
 		assert 'value test' in types[0].value
 >>>>>>> upstream/master
+=======
+	assert typeRep.create(models.Type.Type(
+				0,
+				"admin",
+				"user")).value == 'admin'
+>>>>>>> 628e9d9deaa051d500fdff57d59797bad94d918f
 
 def test_update():
 	typeRep = TypeRepository(
