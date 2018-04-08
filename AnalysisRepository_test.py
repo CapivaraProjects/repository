@@ -13,17 +13,16 @@ def test_insert():
     assert analysisRep.create(analysis).id == 0
 
 def test_search():
-    analyzes = analysisRep.search(analysis=models.Analysis.Analysis(idImage=0))
+    analyzes = analysisRep.search(analysis=models.Analysis.Analysis())
     print('return {0} lines'.format(len(analyzes)))
-    assert analyzes['content'][0].idImage == 0
+    assert analyzes['content'][0].image.id == 0
 
 def test_update():
-    analysis = models.Analysis.Analysis(0, 1)
+    analysis = models.Analysis.Analysis(id=0, image=Image(id=1))
     analysis = analysisRep.update(analysis)
-    assert analysis.idImage == 1
+    assert analysis.image.id == 1
 
 def test_delete():
-    analysis = models.Analysis.Analysis(0, 1)
+    analysis = models.Analysis.Analysis(id=0, image=Image(id=1))
     result = analysisRep.delete(analysis)
     assert result is True
-
