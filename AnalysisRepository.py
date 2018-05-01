@@ -1,5 +1,9 @@
 from database.Analysis import Analysis as AnalysisDB
 from models.Analysis import Analysis
+from models.Image import Image
+from models.Classifier import Classifier
+from models.Plant import Plant
+from models.Disease import Disease
 from repository.base import Base
 from sqlalchemy import and_
 
@@ -22,8 +26,8 @@ class AnalysisRepository(Base):
         session = self.session_factory()
         session.add(analysisDB)
         session.flush()
-        session.commit()
         session.refresh(analysisDB)
+        session.commit()
         return Analysis(analysisDB.id,
                     Image(analysisDB.image.id,
                         Disease(analysisDB.image.disease.id,
@@ -51,9 +55,9 @@ class AnalysisRepository(Base):
         session = self.session_factory()
         analysisDB = session.query(AnalysisDB).filter_by(id=analysis.id).first()
         dic = {}
-        if (analysisDB.image.id != analysis.image.id):
+        if (analysisDB.idImage != analysis.image.id):
             dic['idImage'] = analysis.image.id
-        if (analysisDB.classifier.id != analysis.classifier.id):
+        if (analysisDB.idClassifier != analysis.classifier.id):
             dic['idClassifier'] = analysis.classifier.id
         if (dic != {}):
             session.query(AnalysisDB).filter_by(id=analysis.id).update(dic)
@@ -89,8 +93,8 @@ class AnalysisRepository(Base):
         session = self.session_factory()
         analysisDB = session.query(AnalysisDB).filter_by(id=analysis.id).first()
         session.delete(analysisDB)
-        session.flush()
         session.commit()
+        session.flush()
         if (not session.query(AnalysisDB).filter_by(id=analysisDB.id).count()):
             status = True
         session.close()
@@ -103,8 +107,8 @@ class AnalysisRepository(Base):
         """
         session = self.session_factory()
         query = session.query(AnalysisDB).filter(
-                            and_(AnalysisDB.image.id == analysis.image.id,
-                                AnalysisDB.classifier.id == analysis.classifier.id))
+                            and_(AnalysisDB.idImage == analysis.image.id,
+                                AnalysisDB.idClassifier == analysis.classifier.id))
         content = query.slice(offset, pageSize).all()
         total = query.count()
         analyzes = []

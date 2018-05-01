@@ -1,5 +1,12 @@
 from database.AnalysisResult import AnalysisResult as AnalysisResultDB
-from models.AnalysisResult import AnalysisResult
+from models.AnalysisResult import AnalysisResult 
+from models.Analysis import Analysis 
+from models.Plant import Plant 
+from models.Disease import Disease 
+from models.Image import Image 
+from models.Classifier import Classifier
+
+
 from repository.base import Base
 from sqlalchemy import or_
 
@@ -59,9 +66,9 @@ class AnalysisResultRepository(Base):
         session = self.session_factory()
         analysisResultDB = session.query(AnalysisResultDB).filter_by(id=analysisResult.id).first()
         dic = {}
-        if (analysisResultDB.analysis.id != analysisResult.analysis.id):
+        if (analysisResultDB.idAnalysis != analysisResult.analysis.id):
             dic['idAnalysis'] = analysisResult.analysis.id
-        if (analysisResultDB.disease.id != analysisResult.disease.id):
+        if (analysisResultDB.idDisease != analysisResult.disease.id):
             dic['idDisease'] = analysisResult.disease.id
         if (analysisResultDB.score != analysisResult.score):
             dic['score'] = analysisResult.score
@@ -121,8 +128,8 @@ class AnalysisResultRepository(Base):
         """
         session = self.session_factory()
         query = session.query(AnalysisResultDB).filter(or_(
-                        AnalysisResultDB.analysis.id == analysisResult.analysis.id,
-                        AnalysisResultDB.disease.id == analysisResult.disease.id,
+                        AnalysisResultDB.idAnalysis == analysisResult.analysis.id,
+                        AnalysisResultDB.idDisease == analysisResult.disease.id,
                         AnalysisResultDB.score == analysisResult.score))
         content = query.slice(offset, pageSize).all()
         total = query.count()
