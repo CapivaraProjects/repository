@@ -1,5 +1,7 @@
 from AnalysisRepository import AnalysisRepository
 import models.Analysis
+import models.Image
+
 
 analysisRep = AnalysisRepository(
                 'capivara',
@@ -8,22 +10,54 @@ analysisRep = AnalysisRepository(
                 '5432',
                 'green_eyes')
 
+plantModelTest = models.Plant.Plant(
+                    24,
+                    'Lycopersicum esculentum',
+                    'Tomato')
+
+diseaseModelTest = models.Disease.Disease(
+                    53,
+                    plantModelTest,
+                    '<i>Alternaria solani</i>',
+                    'Early blight')
+
+imageModelTest = models.Image.Image(
+                    1,
+                    diseaseModelTest,
+                    'test',
+                    '',
+                    '',
+                    1)
+
+# already exists a classifier with id 1 in the database
+classifierModelTest = models.Classifier.Classifier(
+                    1,
+                    plantModelTest,
+                    '1',
+                    'gykernel/saved_models')
+                                        
+analysisModelTest = models.Analysis.Analysis(
+                    0,
+                    imageModelTest,
+                    classifierModelTest)
+
 def test_insert():
-    analysis = models.Analysis.Analysis()
-    assert analysisRep.create(analysis).id == 0
+    assert analysisRep.create(analysis=analysisModelTest).id == 0
 
+def test_search_by_id():
+    analysis = analysisRep.searchByID(0)
+    assert analysis.classifier.tag == '1'
+    
 def test_search():
-    analyzes = analysisRep.search(analysis=models.Analysis.Analysis(idImage=0))
+    analyzes = analysisRep.search(analysis=analysisModelTest)
     print('return {0} lines'.format(len(analyzes)))
-    assert analyzes['content'][0].idImage == 0
-
+    assert analyzes['content'][0].classifier.tag == '1'
+    
 def test_update():
-    analysis = models.Analysis.Analysis(0, 1)
-    analysis = analysisRep.update(analysis)
-    assert analysis.idImage == 1
+    analysisModelTest.image.id = 2
+    analysis = analysisRep.update(analysis=analysisModelTest)
+    assert analysis.image.id == 2
 
 def test_delete():
-    analysis = models.Analysis.Analysis(0, 1)
-    result = analysisRep.delete(analysis)
+    result = analysisRep.delete(analysis=analysisModelTest)
     assert result is True
-

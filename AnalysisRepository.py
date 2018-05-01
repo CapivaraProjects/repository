@@ -1,5 +1,9 @@
 from database.Analysis import Analysis as AnalysisDB
 from models.Analysis import Analysis
+from models.Image import Image
+from models.Classifier import Classifier
+from models.Plant import Plant
+from models.Disease import Disease
 from repository.base import Base
 from sqlalchemy import and_
 
@@ -22,10 +26,26 @@ class AnalysisRepository(Base):
         session = self.session_factory()
         session.add(analysisDB)
         session.flush()
-        session.commit()
         session.refresh(analysisDB)
+        session.commit()
         return Analysis(analysisDB.id,
-                        analysisDB.idImage)
+                    Image(analysisDB.image.id,
+                        Disease(analysisDB.image.disease.id,
+                            Plant(analysisDB.image.disease.plant.id,
+                                analysisDB.image.disease.plant.scientificName,
+                                analysisDB.image.disease.plant.commonName),
+                            analysisDB.image.disease.scientificName,
+                            analysisDB.image.disease.commonName),
+                        analysisDB.image.url,
+                        analysisDB.image.description,
+                        analysisDB.image.source,
+                        analysisDB.image.size),
+                    Classifier(analysisDB.classifier.id,
+                        Plant(analysisDB.classifier.plant.id,
+                            analysisDB.classifier.plant.scientificName,
+                            analysisDB.classifier.plant.commonName),
+                        analysisDB.classifier.tag,
+                        analysisDB.classifier.path))
 
     def update(self, analysis=Analysis()):
         """
@@ -35,8 +55,10 @@ class AnalysisRepository(Base):
         session = self.session_factory()
         analysisDB = session.query(AnalysisDB).filter_by(id=analysis.id).first()
         dic = {}
-        if (analysisDB.idImage != analysis.idImage):
-            dic['idImage'] = analysis.idImage
+        if (analysisDB.idImage != analysis.image.id):
+            dic['idImage'] = analysis.image.id
+        if (analysisDB.idClassifier != analysis.classifier.id):
+            dic['idClassifier'] = analysis.classifier.id
         if (dic != {}):
             session.query(AnalysisDB).filter_by(id=analysis.id).update(dic)
             session.commit()
@@ -44,7 +66,23 @@ class AnalysisRepository(Base):
             session.refresh(analysisDB)
         
         return Analysis(analysisDB.id,
-                        analysisDB.idImage)
+                    Image(analysisDB.image.id,
+                        Disease(analysisDB.image.disease.id,
+                            Plant(analysisDB.image.disease.plant.id,
+                                analysisDB.image.disease.plant.scientificName,
+                                analysisDB.image.disease.plant.commonName),
+                            analysisDB.image.disease.scientificName,
+                            analysisDB.image.disease.commonName),
+                        analysisDB.image.url,
+                        analysisDB.image.description,
+                        analysisDB.image.source,
+                        analysisDB.image.size),
+                    Classifier(analysisDB.classifier.id,
+                        Plant(analysisDB.classifier.plant.id,
+                            analysisDB.classifier.plant.scientificName,
+                            analysisDB.classifier.plant.commonName),
+                        analysisDB.classifier.tag,
+                        analysisDB.classifier.path))
 
     def delete(self, analysis=Analysis()):
         """
@@ -55,8 +93,8 @@ class AnalysisRepository(Base):
         session = self.session_factory()
         analysisDB = session.query(AnalysisDB).filter_by(id=analysis.id).first()
         session.delete(analysisDB)
-        session.flush()
         session.commit()
+        session.flush()
         if (not session.query(AnalysisDB).filter_by(id=analysisDB.id).count()):
             status = True
         session.close()
@@ -68,14 +106,31 @@ class AnalysisRepository(Base):
         search by analysis
         """
         session = self.session_factory()
-        query = session.query(AnalysisDB).filter(AnalysisDB.idImage == analysis.idImage)
+        query = session.query(AnalysisDB).filter(
+                            and_(AnalysisDB.idImage == analysis.image.id,
+                                AnalysisDB.idClassifier == analysis.classifier.id))
         content = query.slice(offset, pageSize).all()
         total = query.count()
         analyzes = []
         for analysisDB in content:
-            analyzes.append(Analysis(
-                                analysisDB.id,
-                                analysisDB.idImage))
+            analyzes.append(Analysis(analysisDB.id,
+                    Image(analysisDB.image.id,
+                        Disease(analysisDB.image.disease.id,
+                            Plant(analysisDB.image.disease.plant.id,
+                                analysisDB.image.disease.plant.scientificName,
+                                analysisDB.image.disease.plant.commonName),
+                            analysisDB.image.disease.scientificName,
+                            analysisDB.image.disease.commonName),
+                        analysisDB.image.url,
+                        analysisDB.image.description,
+                        analysisDB.image.source,
+                        analysisDB.image.size),
+                    Classifier(analysisDB.classifier.id,
+                        Plant(analysisDB.classifier.plant.id,
+                            analysisDB.classifier.plant.scientificName,
+                            analysisDB.classifier.plant.commonName),
+                        analysisDB.classifier.tag,
+                        analysisDB.classifier.path)))
     
         return {'total': total, 'content': analyzes}
 
@@ -89,6 +144,21 @@ class AnalysisRepository(Base):
         if (analysisDB is None):
             raise Exception("Analysis not found!")
 
-        return Analysis(
-                    analysisDB.id,
-                    analysisDB.idImage)
+        return Analysis(analysisDB.id,
+                    Image(analysisDB.image.id,
+                        Disease(analysisDB.image.disease.id,
+                            Plant(analysisDB.image.disease.plant.id,
+                                analysisDB.image.disease.plant.scientificName,
+                                analysisDB.image.disease.plant.commonName),
+                            analysisDB.image.disease.scientificName,
+                            analysisDB.image.disease.commonName),
+                        analysisDB.image.url,
+                        analysisDB.image.description,
+                        analysisDB.image.source,
+                        analysisDB.image.size),
+                    Classifier(analysisDB.classifier.id,
+                        Plant(analysisDB.classifier.plant.id,
+                            analysisDB.classifier.plant.scientificName,
+                            analysisDB.classifier.plant.commonName),
+                        analysisDB.classifier.tag,
+                        analysisDB.classifier.path))
