@@ -111,9 +111,9 @@ class AnalysisRepository(Base):
                                 AnalysisDB.idClassifier == analysis.classifier.id))
         content = query.slice(offset, pageSize).all()
         total = query.count()
-        analyzes = []
+        analyses = []
         for analysisDB in content:
-            analyzes.append(Analysis(analysisDB.id,
+            analyses.append(Analysis(analysisDB.id,
                     Image(analysisDB.image.id,
                         Disease(analysisDB.image.disease.id,
                             Plant(analysisDB.image.disease.plant.id,
@@ -132,7 +132,7 @@ class AnalysisRepository(Base):
                         analysisDB.classifier.tag,
                         analysisDB.classifier.path)))
     
-        return {'total': total, 'content': analyzes}
+        return {'total': total, 'content': analyses}
 
     def searchByID(self, id):
         """
