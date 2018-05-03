@@ -49,6 +49,7 @@ def test_search_by_id():
     assert analysis.classifier.tag == '1'
     
 def test_search():
+
     analyses = analysisRep.search(analysis=analysisModelTest)
     print('return {0} lines'.format(len(analyses)))
     assert analyses['content'][0].classifier.tag == '1'
