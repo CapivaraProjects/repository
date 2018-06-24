@@ -126,35 +126,5 @@ def test_save_image():
             imagesDir=os.getcwd(),
             image=image,
             extension='.JPG')
-    size = "large"
-    if image.size == 1:
-        size = "thumb"
-    elif image.size == 2:
-        size = "medium"
-    elif image.size == 3:
-        size = "large"
-    filepath = "{}/{}/{}/{}/{}".format(
-        os.getcwd(),
-        size,
-        image.disease.plant.commonName.replace(
-            ' ',
-            '_').replace(
-                '(',
-                '_').replace(
-                    ')',
-                    '_'),
-        image.disease.scientificName.replace(
-            " ",
-            "_").replace(
-                ";",
-                "").replace(
-                    "(",
-                    "_").replace(
-                        ")",
-                        "_").replace(
-                            "<i>",
-                            "").replace(
-                                "</i>",
-                                ""),
-        image.url)
-    assert os.path.isfile(filepath)
+    
+    assert os.path.isfile(image.url)
