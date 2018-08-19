@@ -6,7 +6,7 @@ from repository.base import Base
 from sqlalchemy import and_
 import base64
 import uuid
-
+import os
 
 class ImageRepository(Base):
     """
@@ -228,10 +228,17 @@ class ImageRepository(Base):
                                      "</i>",
                                      ""),
              filename + extension)
+
+        if not os.path.exists(os.path.dirname(filepath)):
+            try:
+                os.makedirs(os.path.dirname(filepath))
+            except Exception as exc:
+                raise exc
+
         fh = open(filepath, 'wb')
         fh.write(base64.decodestring(image.url.encode('utf-8')))
         fh.close()
 
-        image.url = filename + extension
+        image.url = filepath
 
         return image
