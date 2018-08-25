@@ -1,4 +1,4 @@
-from AnalysisResultRepository import AnalysisResultRepository
+from repository.AnalysisResultRepository import AnalysisResultRepository
 import models.AnalysisResult
 import models.Analysis
 import models.Plant
@@ -47,17 +47,18 @@ analysisModelTest = models.Analysis.Analysis(
                         classifierModelTest)
 
 analysisResultModelTest = models.AnalysisResult.AnalysisResult(
-                        0, 
+                        1, 
                         analysisModelTest,
                         diseaseModelTest,
-                        0.98)
+                        0.98,
+                        '100,100,128,128')
 
 
 def test_insert():
     assert analysisResultRep.create(analysisResultModelTest).score == 0.98
 
 def test_search_by_id():
-    analysisResult = analysisResultRep.searchByID(0)
+    analysisResult = analysisResultRep.searchByID(1)
     assert analysisResult.score == 0.98
     
 def test_search():
