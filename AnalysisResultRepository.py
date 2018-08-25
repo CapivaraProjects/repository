@@ -56,7 +56,8 @@ class AnalysisResultRepository(Base):
                                 analysisResultDB.disease.plant.commonName),
                             analysisResultDB.disease.scientificName,
                             analysisResultDB.disease.commonName),
-                        analysisResultDB.score)
+                        analysisResultDB.score,
+                        analysisResultDB.frame)
 
     def update(self, analysisResult=AnalysisResult()):
         """
@@ -72,6 +73,8 @@ class AnalysisResultRepository(Base):
             dic['idDisease'] = analysisResult.disease.id
         if (analysisResultDB.score != analysisResult.score):
             dic['score'] = analysisResult.score
+        if (analysisResultDB.frame != analysisResult.frame):
+            dic['frame'] = analysisResult.frame
         if (dic != {}):
             session.query(AnalysisResultDB).filter_by(id=analysisResult.id).update(dic)
             session.commit()
@@ -103,7 +106,8 @@ class AnalysisResultRepository(Base):
                                 analysisResultDB.disease.plant.commonName),
                             analysisResultDB.disease.scientificName,
                             analysisResultDB.disease.commonName),
-                        analysisResultDB.score)
+                        analysisResultDB.score,
+                        analysisResultDB.frame)
 
     def delete(self, analysisResult=AnalysisResult()):
         """
@@ -130,7 +134,8 @@ class AnalysisResultRepository(Base):
         query = session.query(AnalysisResultDB).filter(or_(
                         AnalysisResultDB.idAnalysis == analysisResult.analysis.id,
                         AnalysisResultDB.idDisease == analysisResult.disease.id,
-                        AnalysisResultDB.score == analysisResult.score))
+                        AnalysisResultDB.score == analysisResult.score,
+                        AnalysisResultDB.frame == analysisResult.frame))
         content = query.slice(offset, pageSize).all()
         total = query.count()
         analysisResults = []
@@ -160,7 +165,8 @@ class AnalysisResultRepository(Base):
                                 analysisResultDB.disease.plant.commonName),
                             analysisResultDB.disease.scientificName,
                             analysisResultDB.disease.commonName),
-                        analysisResultDB.score))
+                        analysisResultDB.score,
+                        analysisResultDB.frame))
     
         return {'total': total, 'content': analysisResults}
 
@@ -199,4 +205,5 @@ class AnalysisResultRepository(Base):
                                 analysisResultDB.disease.plant.commonName),
                             analysisResultDB.disease.scientificName,
                             analysisResultDB.disease.commonName),
-                        analysisResultDB.score)
+                        analysisResultDB.score,
+                        analysisResultDB.frame)
