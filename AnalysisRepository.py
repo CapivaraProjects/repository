@@ -1,5 +1,6 @@
 from database.Analysis import Analysis as AnalysisDB
 from models.Analysis import Analysis
+from models.AnalysisResult import AnalysisResult
 from models.Image import Image
 from models.Classifier import Classifier
 from models.Plant import Plant
@@ -144,6 +145,16 @@ class AnalysisRepository(Base):
         if (analysisDB is None):
             raise Exception("Analysis not found!")
 
+        results = []
+        for result in analysisDB.analysis_results:
+            results.append(AnalysisResult(
+                id=result.id,
+                disease=Disease(
+                    id=result.disease,
+                    scientificName=result.scientificName,
+                    commonName=result.commonName),
+                frame=result.frame,
+                score=result.score))
         return Analysis(analysisDB.id,
                     Image(analysisDB.image.id,
                         Disease(analysisDB.image.disease.id,
@@ -161,4 +172,5 @@ class AnalysisRepository(Base):
                             analysisDB.classifier.plant.scientificName,
                             analysisDB.classifier.plant.commonName),
                         analysisDB.classifier.tag,
-                        analysisDB.classifier.path))
+                        analysisDB.classifier.path),
+                    analysis_results=results)
