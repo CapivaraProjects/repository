@@ -150,9 +150,9 @@ class AnalysisRepository(Base):
             results.append(AnalysisResult(
                 id=result.id,
                 disease=Disease(
-                    id=result.disease,
-                    scientificName=result.scientificName,
-                    commonName=result.commonName),
+                    id=result.disease.id,
+                    scientificName=result.disease.scientificName,
+                    commonName=result.disease.commonName),
                 frame=result.frame,
                 score=result.score))
         return Analysis(analysisDB.id,
