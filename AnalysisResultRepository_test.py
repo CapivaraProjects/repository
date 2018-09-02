@@ -58,14 +58,6 @@ def test_insert():
     assert analysisResultRep.create(analysisResultModelTest).score == 0.98
 
 
-def test_insert_list():
-    r1 = analysisResultModelTest
-    r2 = analysisResultModelTest
-    r1.id = None
-    r2.id = None
-    assert analysisResultRep.create_using_list([r1, r2])
-
-
 def test_search_by_id():
     analysisResult = analysisResultRep.searchByID(1)
     assert analysisResult.score == 0.98
@@ -85,4 +77,14 @@ def test_update():
 
 def test_delete():
     result = analysisResultRep.delete(analysisResultModelTest)
-    assert result is True
+    assert result
+
+
+def test_insert_list():
+    r1 = analysisResultModelTest
+    r2 = analysisResultModelTest
+    r1.score = 20
+    r2.score = 30
+    r1.id = None
+    r2.id = None
+    assert analysisResultRep.create_using_list([r1, r2])
