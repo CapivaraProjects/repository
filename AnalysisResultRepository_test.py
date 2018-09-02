@@ -59,8 +59,11 @@ def test_insert():
 
 
 def test_insert_list():
-    assert analysisResultRep.create_using_list(
-        [analysisResultModelTest, analysisResultModelTest])
+    r1 = analysisResultModelTest
+    r2 = analysisResultModelTest
+    r1.id = None
+    r2.id = None
+    assert analysisResultRep.create_using_list([r1, r2])
 
 
 def test_search_by_id():
