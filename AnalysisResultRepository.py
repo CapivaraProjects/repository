@@ -59,13 +59,30 @@ class AnalysisResultRepository(Base):
                         analysisResultDB.score,
                         analysisResultDB.frame)
 
+    def create_using_list(self, analysis_results):
+        """Create AnalysisResults on db using a list
+        Args:
+            analysis_results: A list of analysis results to be inserted
+        Returns:
+            A list of filled  AnalysisResults
+        """
+        analysis_results_db = [AnalysisResultDB(
+            analysisResult=analysis_result) for analysis_result in analysis_results]
+        session = self.session_factory()
+        session.add_all(analysis_results_db)
+        session.flush()
+        session.commit()
+        session.refresh()
+        return True
+
     def update(self, analysisResult=AnalysisResult()):
         """
         (AnalysisResult) -> (AnalysisResult)
         update analysis_result table
         """
         session = self.session_factory()
-        analysisResultDB = session.query(AnalysisResultDB).filter_by(id=analysisResult.id).first()
+        analysisResultDB = session.query(AnalysisResultDB).filter_by(
+            id=analysisResult.id).first()
         dic = {}
         if (analysisResultDB.idAnalysis != analysisResult.analysis.id):
             dic['idAnalysis'] = analysisResult.analysis.id
@@ -76,11 +93,12 @@ class AnalysisResultRepository(Base):
         if (analysisResultDB.frame != analysisResult.frame):
             dic['frame'] = analysisResult.frame
         if (dic != {}):
-            session.query(AnalysisResultDB).filter_by(id=analysisResult.id).update(dic)
+            session.query(AnalysisResultDB).filter_by(
+                id=analysisResult.id).update(dic)
             session.commit()
             session.flush()
             session.refresh(analysisResultDB)
-        
+
         return AnalysisResult(analysisResultDB.id,
                         Analysis(analysisResultDB.analysis.id,
                             Image(analysisResultDB.analysis.image.id,
@@ -116,11 +134,13 @@ class AnalysisResultRepository(Base):
         """
         status = False
         session = self.session_factory()
-        analysisResultDB = session.query(AnalysisResultDB).filter_by(id=analysisResult.id).first()
+        analysisResultDB = session.query(AnalysisResultDB).filter_by(
+            id=analysisResult.id).first()
         session.delete(analysisResultDB)
         session.flush()
         session.commit()
-        if (not session.query(AnalysisResultDB).filter_by(id=analysisResultDB.id).count()):
+        if (not session.query(AnalysisResultDB).filter_by(
+                id=analysisResultDB.id).count()):
             status = True
         session.close()
         return status
@@ -167,7 +187,7 @@ class AnalysisResultRepository(Base):
                             analysisResultDB.disease.commonName),
                         analysisResultDB.score,
                         analysisResultDB.frame))
-    
+
         return {'total': total, 'content': analysisResults}
 
     def searchByID(self, id):
