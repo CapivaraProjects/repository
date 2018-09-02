@@ -72,7 +72,6 @@ class AnalysisResultRepository(Base):
         session.add_all(analysis_results_db)
         session.flush()
         session.commit()
-        session.refresh()
         return True
 
     def update(self, analysisResult=AnalysisResult()):
