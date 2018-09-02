@@ -18,7 +18,7 @@ plantModelTest = models.Plant.Plant(
                         24,
                         'Lycopersicum esculentum',
                         'Tomato')
-                        
+
 diseaseModelTest = models.Disease.Disease(
                         53,
                         plantModelTest,
@@ -27,7 +27,7 @@ diseaseModelTest = models.Disease.Disease(
 
 imageModelTest = models.Image.Image(
                         1,
-                        diseaseModelTest,        
+                        diseaseModelTest,
                         'test',
                         '',
                         '',
@@ -39,7 +39,7 @@ classifierModelTest = models.Classifier.Classifier(
                         plantModelTest,
                         '1',
                         'gykernel/saved_models')
-                        
+
 # already exists an analysis with id 1 in the database
 analysisModelTest = models.Analysis.Analysis(
                         1,
@@ -47,7 +47,7 @@ analysisModelTest = models.Analysis.Analysis(
                         classifierModelTest)
 
 analysisResultModelTest = models.AnalysisResult.AnalysisResult(
-                        1, 
+                        1,
                         analysisModelTest,
                         diseaseModelTest,
                         0.98,
@@ -57,10 +57,17 @@ analysisResultModelTest = models.AnalysisResult.AnalysisResult(
 def test_insert():
     assert analysisResultRep.create(analysisResultModelTest).score == 0.98
 
+
+def test_insert_list():
+    assert analysisResultRep.create_using_list(
+        [analysisResultModelTest, analysisResultModelTest])
+
+
 def test_search_by_id():
     analysisResult = analysisResultRep.searchByID(1)
     assert analysisResult.score == 0.98
-    
+
+
 def test_search():
     analysisResults = analysisResultRep.search(analysisResultModelTest)
     print('return {0} lines'.format(analysisResults['total']))
