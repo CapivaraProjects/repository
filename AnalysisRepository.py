@@ -8,8 +8,9 @@ from models.Disease import Disease
 from repository.base import Base
 from sqlalchemy import and_
 
+
 class AnalysisRepository(Base):
-    
+
     def __init__(self,
                  dbuser="",
                  dbpass="",
@@ -54,7 +55,8 @@ class AnalysisRepository(Base):
         update analysis table
         """
         session = self.session_factory()
-        analysisDB = session.query(AnalysisDB).filter_by(id=analysis.id).first()
+        analysisDB = session.query(AnalysisDB).filter_by(
+            id=analysis.id).first()
         dic = {}
         if (analysisDB.idImage != analysis.image.id):
             dic['idImage'] = analysis.image.id
@@ -65,7 +67,7 @@ class AnalysisRepository(Base):
             session.commit()
             session.flush()
             session.refresh(analysisDB)
-        
+
         return Analysis(analysisDB.id,
                     Image(analysisDB.image.id,
                         Disease(analysisDB.image.disease.id,
@@ -92,7 +94,8 @@ class AnalysisRepository(Base):
         """
         status = False
         session = self.session_factory()
-        analysisDB = session.query(AnalysisDB).filter_by(id=analysis.id).first()
+        analysisDB = session.query(AnalysisDB).filter_by(
+            id=analysis.id).first()
         session.delete(analysisDB)
         session.commit()
         session.flush()
@@ -108,7 +111,8 @@ class AnalysisRepository(Base):
         """
         session = self.session_factory()
         query = session.query(AnalysisDB).filter(
-                            and_(AnalysisDB.idImage == analysis.image.id,
+                            and_(
+                                AnalysisDB.idImage == analysis.image.id,
                                 AnalysisDB.idClassifier == analysis.classifier.id))
         content = query.slice(offset, pageSize).all()
         total = query.count()
@@ -132,7 +136,7 @@ class AnalysisRepository(Base):
                             analysisDB.classifier.plant.commonName),
                         analysisDB.classifier.tag,
                         analysisDB.classifier.path)))
-    
+
         return {'total': total, 'content': analyses}
 
     def searchByID(self, id):
