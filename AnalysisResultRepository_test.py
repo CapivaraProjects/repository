@@ -44,7 +44,8 @@ classifierModelTest = models.Classifier.Classifier(
 analysisModelTest = models.Analysis.Analysis(
                         1,
                         imageModelTest,
-                        classifierModelTest)
+                        classifierModelTest,
+                        user=models.User.User(id=1))
 
 analysisResultModelTest = models.AnalysisResult.AnalysisResult(
                         1,
