@@ -1,5 +1,6 @@
 from repository.AnalysisResultRepository import AnalysisResultRepository
 from repository.AnalysisRepository import AnalysisRepository
+from repository.User import UserRepository
 import models.AnalysisResult
 import models.Analysis
 import models.Plant
@@ -16,6 +17,13 @@ analysisResultRep = AnalysisResultRepository(
                 'green_eyes')
 
 analysisRep = AnalysisRepository(
+                'capivara',
+                'test',
+                '127.0.0.1',
+                '5432',
+                'green_eyes')
+
+userRep = UserRepository(
                 'capivara',
                 'test',
                 '127.0.0.1',
@@ -53,7 +61,7 @@ analysisModelTest = models.Analysis.Analysis(
                         id=1,
                         image=imageModelTest,
                         classifier=classifierModelTest,
-                        user=models.User.User(id=1))
+                        user=userRep.create(models.User.User(id=1)))
 
 analysisResultModelTest = models.AnalysisResult.AnalysisResult(
                         1,
