@@ -1,6 +1,6 @@
 from repository.AnalysisResultRepository import AnalysisResultRepository
 from repository.AnalysisRepository import AnalysisRepository
-from repository.User import UserRepository
+from repository.UserRepository import UserRepository
 import models.AnalysisResult
 import models.Analysis
 import models.Plant
