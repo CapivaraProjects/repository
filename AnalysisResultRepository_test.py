@@ -1,4 +1,5 @@
 from repository.AnalysisResultRepository import AnalysisResultRepository
+from repository.AnalysisRepository import AnalysisRepository
 import models.AnalysisResult
 import models.Analysis
 import models.Plant
@@ -8,6 +9,13 @@ import models.Classifier
 
 
 analysisResultRep = AnalysisResultRepository(
+                'capivara',
+                'test',
+                '127.0.0.1',
+                '5432',
+                'green_eyes')
+
+analysisRep = AnalysisRepository(
                 'capivara',
                 'test',
                 '127.0.0.1',
@@ -49,7 +57,7 @@ analysisModelTest = models.Analysis.Analysis(
 
 analysisResultModelTest = models.AnalysisResult.AnalysisResult(
                         1,
-                        analysisModelTest,
+                        analysisRep.create(analysisModelTest),
                         diseaseModelTest,
                         0.98,
                         '100,100,128,128')
