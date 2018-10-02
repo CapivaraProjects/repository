@@ -61,7 +61,7 @@ analysisModelTest = models.Analysis.Analysis(
                         id=1,
                         image=imageModelTest,
                         classifier=classifierModelTest,
-                        user=userRep.create(models.User.User(id=1)))
+                        user=userRep.create(models.User.User(id=0)))
 
 analysisResultModelTest = models.AnalysisResult.AnalysisResult(
                         1,
