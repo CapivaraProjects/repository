@@ -42,9 +42,9 @@ classifierModelTest = models.Classifier.Classifier(
 
 # already exists an analysis with id 1 in the database
 analysisModelTest = models.Analysis.Analysis(
-                        1,
-                        imageModelTest,
-                        classifierModelTest,
+                        id=1,
+                        image=imageModelTest,
+                        classifier=classifierModelTest,
                         user=models.User.User(id=1))
 
 analysisResultModelTest = models.AnalysisResult.AnalysisResult(
