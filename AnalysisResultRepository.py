@@ -1,17 +1,19 @@
 from database.AnalysisResult import AnalysisResult as AnalysisResultDB
-from models.AnalysisResult import AnalysisResult 
-from models.Analysis import Analysis 
-from models.Plant import Plant 
-from models.Disease import Disease 
-from models.Image import Image 
+from models.AnalysisResult import AnalysisResult
+from models.Analysis import Analysis
+from models.Plant import Plant
+from models.Disease import Disease
+from models.Image import Image
 from models.Classifier import Classifier
+from models.User import User
 
 
 from repository.base import Base
 from sqlalchemy import or_
 
+
 class AnalysisResultRepository(Base):
-    
+
     def __init__(self,
                  dbuser="",
                  dbpass="",
@@ -49,7 +51,12 @@ class AnalysisResultRepository(Base):
                                     analysisResultDB.analysis.classifier.plant.scientificName,
                                     analysisResultDB.analysis.classifier.plant.commonName),
                                 analysisResultDB.analysis.classifier.tag,
-                                analysisResultDB.analysis.classifier.path)),
+                                analysisResultDB.analysis.classifier.path),
+                            user=User(
+                                id=analysisResultDB.analysis.user.id,
+                                idType=analysisResultDB.analysis.user.idType,
+                                email=analysisResultDB.analysis.user.email,
+                                username=analysisResultDB.analysis.user.username)),
                         Disease(analysisResultDB.disease.id,
                             Plant(analysisResultDB.disease.plant.id,
                                 analysisResultDB.disease.plant.scientificName,
@@ -116,7 +123,12 @@ class AnalysisResultRepository(Base):
                                     analysisResultDB.analysis.classifier.plant.scientificName,
                                     analysisResultDB.analysis.classifier.plant.commonName),
                                 analysisResultDB.analysis.classifier.tag,
-                                analysisResultDB.analysis.classifier.path)),
+                                analysisResultDB.analysis.classifier.path),
+                            user=User(
+                                id=analysisResultDB.analysis.user.id,
+                                idType=analysisResultDB.analysis.user.idType,
+                                email=analysisResultDB.analysis.user.email,
+                                username=analysisResultDB.analysis.user.username)),
                         Disease(analysisResultDB.disease.id,
                             Plant(analysisResultDB.disease.plant.id,
                                 analysisResultDB.disease.plant.scientificName,
@@ -177,7 +189,12 @@ class AnalysisResultRepository(Base):
                                     analysisResultDB.analysis.classifier.plant.scientificName,
                                     analysisResultDB.analysis.classifier.plant.commonName),
                                 analysisResultDB.analysis.classifier.tag,
-                                analysisResultDB.analysis.classifier.path)),
+                                analysisResultDB.analysis.classifier.path),
+                            user=User(
+                                id=analysisResultDB.analysis.user.id,
+                                idType=analysisResultDB.analysis.user.idType,
+                                email=analysisResultDB.analysis.user.email,
+                                username=analysisResultDB.analysis.user.username)),
                         Disease(analysisResultDB.disease.id,
                             Plant(analysisResultDB.disease.plant.id,
                                 analysisResultDB.disease.plant.scientificName,
@@ -217,7 +234,12 @@ class AnalysisResultRepository(Base):
                                     analysisResultDB.analysis.classifier.plant.scientificName,
                                     analysisResultDB.analysis.classifier.plant.commonName),
                                 analysisResultDB.analysis.classifier.tag,
-                                analysisResultDB.analysis.classifier.path)),
+                                analysisResultDB.analysis.classifier.path),
+                            user=User(
+                                id=analysisResultDB.analysis.user.id,
+                                idType=analysisResultDB.analysis.user.idType,
+                                email=analysisResultDB.analysis.user.email,
+                                username=analysisResultDB.analysis.user.username)),
                         Disease(analysisResultDB.disease.id,
                             Plant(analysisResultDB.disease.plant.id,
                                 analysisResultDB.disease.plant.scientificName,

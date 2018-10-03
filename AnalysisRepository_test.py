@@ -1,6 +1,7 @@
 from AnalysisRepository import AnalysisRepository
 import models.Analysis
 import models.Image
+import models.User
 
 
 analysisRep = AnalysisRepository(
@@ -35,29 +36,35 @@ classifierModelTest = models.Classifier.Classifier(
                     plantModelTest,
                     '1',
                     'gykernel/saved_models')
-                                        
+
 analysisModelTest = models.Analysis.Analysis(
                     0,
                     imageModelTest,
-                    classifierModelTest)
+                    classifierModelTest,
+                    user=models.User.User(id=1))
+
 
 def test_insert():
     assert analysisRep.create(analysis=analysisModelTest).id == 0
 
+
 def test_search_by_id():
     analysis = analysisRep.searchByID(0)
     assert analysis.classifier.tag == '1'
-    
+
+
 def test_search():
 
     analyses = analysisRep.search(analysis=analysisModelTest)
     print('return {0} lines'.format(len(analyses)))
     assert analyses['content'][0].classifier.tag == '1'
-    
+
+
 def test_update():
     analysisModelTest.image.id = 2
     analysis = analysisRep.update(analysis=analysisModelTest)
     assert analysis.image.id == 2
+
 
 def test_delete():
     result = analysisRep.delete(analysis=analysisModelTest)

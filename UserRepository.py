@@ -1,5 +1,6 @@
 from database.User import User as UserDB
 from models.User import User
+from models.Analysis import Analysis
 from repository.base import Base
 from sqlalchemy import and_
 from tools.Cryptography import Crypto
@@ -35,7 +36,8 @@ class UserRepository(Base):
                     userDB.password,
                     userDB.salt,
                     userDB.dateInsertion,
-                    userDB.dateUpdate)
+                    userDB.dateUpdate,
+                    [Analysis(id=x.id) for x in userDB.analysis])
 
     def update(self, user=User()):
         """
@@ -70,7 +72,8 @@ class UserRepository(Base):
                     userDB.password,
                     userDB.salt,
                     userDB.dateInsertion,
-                    userDB.dateUpdate)
+                    userDB.dateUpdate,
+                    [Analysis(id=x.id) for x in userDB.analysis])
 
     def delete(self, user=User()):
         """
@@ -108,7 +111,8 @@ class UserRepository(Base):
                     userDB.password,
                     userDB.salt,
                     userDB.dateInsertion,
-                    userDB.dateUpdate))
+                    userDB.dateUpdate,
+                    [Analysis(id=x.id) for x in userDB.analysis]))
         total = query.count()
         dic = {'total': total, 'content': users}
         return dic
@@ -126,7 +130,8 @@ class UserRepository(Base):
                     userDB.password,
                     userDB.salt,
                     userDB.dateInsertion,
-                    userDB.dateUpdate)
+                    userDB.dateUpdate,
+                    [Analysis(id=x.id) for x in userDB.analysis])
 
     def authentication(self, user=User()):
         """
@@ -149,6 +154,7 @@ class UserRepository(Base):
                         userDB.password,
                         userDB.salt,
                         userDB.dateInsertion,
-                        userDB.dateUpdate)
+                        userDB.dateUpdate,
+                        [Analysis(id=x.id) for x in userDB.analysis])
         else:
             return User()

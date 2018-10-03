@@ -1,4 +1,6 @@
 from repository.AnalysisResultRepository import AnalysisResultRepository
+from repository.AnalysisRepository import AnalysisRepository
+from repository.UserRepository import UserRepository
 import models.AnalysisResult
 import models.Analysis
 import models.Plant
@@ -8,6 +10,20 @@ import models.Classifier
 
 
 analysisResultRep = AnalysisResultRepository(
+                'capivara',
+                'test',
+                '127.0.0.1',
+                '5432',
+                'green_eyes')
+
+analysisRep = AnalysisRepository(
+                'capivara',
+                'test',
+                '127.0.0.1',
+                '5432',
+                'green_eyes')
+
+userRep = UserRepository(
                 'capivara',
                 'test',
                 '127.0.0.1',
@@ -42,13 +58,14 @@ classifierModelTest = models.Classifier.Classifier(
 
 # already exists an analysis with id 1 in the database
 analysisModelTest = models.Analysis.Analysis(
-                        1,
-                        imageModelTest,
-                        classifierModelTest)
+                        id=1,
+                        image=imageModelTest,
+                        classifier=classifierModelTest,
+                        user=userRep.create(models.User.User(id=0)))
 
 analysisResultModelTest = models.AnalysisResult.AnalysisResult(
                         1,
-                        analysisModelTest,
+                        analysisRep.create(analysisModelTest),
                         diseaseModelTest,
                         0.98,
                         '100,100,128,128')
