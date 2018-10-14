@@ -30,18 +30,17 @@ class ImageRepository(Base):
                  dbname=""):
         super().__init__(dbuser, dbpass, dbhost, port, dbname)
 
-    def _get_storage_client(self, project_id):
+    def _get_storage_client(self, json_file):
         """
         Get storage client
 
         Args:
-            project_id: Project identifier
+            json_file: JSON authorization file
 
         Returns:
             A storage client
         """
-        return storage.Client(
-            project=project_id)
+        return storage.Client.from_service_account_json(json_file)
 
     def _safe_filename(self, filename):
         """
@@ -62,7 +61,7 @@ class ImageRepository(Base):
             self,
             file_stream,
             filename,
-            project_id,
+            json_file,
             storage_bucket):
         """
         Upload file to storage cloud
@@ -71,14 +70,14 @@ class ImageRepository(Base):
             file_stream: file stram binary
             filename: filename
             content_type: content type
-            project_id: Project identifier
+            json_file: JSON authorization file
             storage_bucket: Storage bucket
 
         Returns:
             A url
         """
         filename = self._safe_filename(filename)
-        client = self._get_storage_client(project_id)
+        client = self._get_storage_client(json_file)
         bucket = client.bucket(storage_bucket)
         blob = bucket.blob(filename)
 
