@@ -1,12 +1,20 @@
+import os
+import cv2
+import six
+import uuid
+import base64
+import datetime
+import numpy as np
+from sqlalchemy import and_
+from google.cloud import storage
+from werkzeug import secure_filename
+
 from database.Image import Image as ImageDB
 from models.Image import Image
 from models.Disease import Disease
 from models.Plant import Plant
 from repository.base import Base
-from sqlalchemy import and_
-import base64
-import uuid
-import os
+
 
 class ImageRepository(Base):
     """
@@ -21,6 +29,69 @@ class ImageRepository(Base):
                  port="",
                  dbname=""):
         super().__init__(dbuser, dbpass, dbhost, port, dbname)
+
+    def _get_storage_client(project_id):
+        """
+        Get storage client
+
+        Args:
+            project_id: Project identifier
+
+        Returns:
+            A storage client
+        """
+        return storage.Client(
+            project=project_id)
+
+    def _safe_filename(filename):
+        """
+        Generates a safe filename
+
+        Args:
+            filename: Image filename
+
+        Returns:
+            A filename
+        """
+        filename = secure_filename(filename)
+        date = datetime.datetime.utcnow().strftime("%Y-%m-%d-%H%M%S")
+        basename, extension = filename.rsplit('.', 1)
+        return "{0}-{1}.{2}".format(basename, date, extension)
+
+    def upload_file(
+            self,
+            file_stream,
+            filename,
+            project_id,
+            storage_bucket):
+        """
+        Upload file to storage cloud
+
+        Args:
+            file_stream: file stram binary
+            filename: filename
+            content_type: content type
+            project_id: Project identifier
+            storage_bucket: Storage bucket
+
+        Returns:
+            A url
+        """
+        filename = self._safe_filename(filename)
+        client = self._get_storage_client(project_id)
+        bucket = client.bucket(storage_bucket)
+        blob = bucket.blob(filename)
+
+        blob.upload_from_string(
+            file_stream,
+            content_type='image/jpeg')
+
+        url = blob.public_url
+
+        if isinstance(url, six.binary_type):
+            url = url.encode('utf-8')
+
+        return url
 
     def create(self, image=Image()):
         """
@@ -235,9 +306,8 @@ class ImageRepository(Base):
             except Exception as exc:
                 raise exc
 
-        fh = open(filepath, 'wb')
-        fh.write(base64.decodestring(image.url.encode('utf-8')))
-        fh.close()
+        nparr = np.fromstring(base64.b64decode(image.url), np.uint8)
+        cv2.imwrite(filepath, cv2.imdecode(nparr, cv2.IMREAD_COLOR))
 
         image.url = filepath
 
