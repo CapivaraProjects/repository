@@ -30,7 +30,7 @@ class ImageRepository(Base):
                  dbname=""):
         super().__init__(dbuser, dbpass, dbhost, port, dbname)
 
-    def _get_storage_client(project_id):
+    def _get_storage_client(self, project_id):
         """
         Get storage client
 
@@ -43,7 +43,7 @@ class ImageRepository(Base):
         return storage.Client(
             project=project_id)
 
-    def _safe_filename(filename):
+    def _safe_filename(self, filename):
         """
         Generates a safe filename
 
