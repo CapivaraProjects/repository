@@ -59,15 +59,13 @@ class ImageRepository(Base):
 
     def upload_file(
             self,
-            file_stream,
-            filename,
+            filename_original,
             json_file,
             storage_bucket):
         """
         Upload file to storage cloud
 
         Args:
-            file_stream: file stram binary
             filename: filename
             content_type: content type
             json_file: JSON authorization file
@@ -76,14 +74,14 @@ class ImageRepository(Base):
         Returns:
             A url
         """
-        filename = self._safe_filename(filename)
+        filename = self._safe_filename(filename_original.rsplit('/')[-1])
         client = self._get_storage_client(json_file)
         bucket = client.bucket(storage_bucket)
         blob = bucket.blob(filename)
 
-        blob.upload_from_string(
-            file_stream,
-            content_type='image/jpeg')
+        with open(filename_original, 'rb') as fh:
+            blob.upload_from_file(
+                fh)
 
         url = blob.public_url
 
