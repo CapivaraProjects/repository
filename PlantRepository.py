@@ -1,5 +1,6 @@
 from database.Plant import Plant as PlantDB
 from models.Plant import Plant
+from models.Disease import Disease
 from repository.base import Base
 from sqlalchemy import and_
 
@@ -92,6 +93,13 @@ class PlantRepository(Base):
         """
         session = self.session_factory()
         plantDB = session.query(PlantDB).get(plantId)
+        diseases = []
+        for disease in plantDB.diseases:
+            diseases.append(Disease(
+                id=disease.id,
+                scientificName=disease.scientificName,
+                commonName=disease.commonName))
         return Plant(plantDB.id,
                      plantDB.scientificName,
-                     plantDB.commonName)
+                     plantDB.commonName,
+                     diseases)

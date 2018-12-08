@@ -3,6 +3,9 @@ from database.Plant import Plant
 from database.Disease import Disease
 from database.Type import Type
 from database.Image import Image
+from database.Analysis import Analysis
+from database.AnalysisResult import AnalysisResult
+from database.Classifier import Classifier
 
 
 def test_connection():

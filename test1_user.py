@@ -33,11 +33,8 @@ def test_search():
 
 
 def test_authentication():
-    crypto = Crypto()
-    salt = crypto.generateRandomSalt()
-    ciphredPassword = crypto.encrypt(salt, 'test')
     user = models.User.User(username='tester',
-                            salt=salt, password=ciphredPassword)
+                            password='test')
     authUser = userRep.authentication(user)
     assert authUser.username == user.username
 

@@ -1,10 +1,17 @@
 from database.Analysis import Analysis as AnalysisDB
 from models.Analysis import Analysis
+from models.AnalysisResult import AnalysisResult
+from models.Image import Image
+from models.Classifier import Classifier
+from models.Plant import Plant
+from models.Disease import Disease
+from models.User import User
 from repository.base import Base
 from sqlalchemy import and_
 
+
 class AnalysisRepository(Base):
-    
+
     def __init__(self,
                  dbuser="",
                  dbpass="",
@@ -22,10 +29,37 @@ class AnalysisRepository(Base):
         session = self.session_factory()
         session.add(analysisDB)
         session.flush()
-        session.commit()
         session.refresh(analysisDB)
-        return Analysis(analysisDB.id,
-                        analysisDB.idImage)
+        session.commit()
+        return Analysis(
+            analysisDB.id,
+            image=Image(
+                analysisDB.image.id,
+                Disease(
+                    analysisDB.image.disease.id,
+                    Plant(
+                        analysisDB.image.disease.plant.id,
+                        analysisDB.image.disease.plant.scientificName,
+                        analysisDB.image.disease.plant.commonName),
+                    analysisDB.image.disease.scientificName,
+                    analysisDB.image.disease.commonName),
+                analysisDB.image.url,
+                analysisDB.image.description,
+                analysisDB.image.source,
+                analysisDB.image.size),
+            classifier=Classifier(
+                analysisDB.classifier.id,
+                Plant(
+                    analysisDB.classifier.plant.id,
+                    analysisDB.classifier.plant.scientificName,
+                    analysisDB.classifier.plant.commonName),
+                analysisDB.classifier.tag,
+                analysisDB.classifier.path),
+            user=User(
+                id=analysisDB.user.id,
+                idType=analysisDB.user.idType,
+                email=analysisDB.user.email,
+                username=analysisDB.user.username))
 
     def update(self, analysis=Analysis()):
         """
@@ -33,18 +67,48 @@ class AnalysisRepository(Base):
         update analysis table
         """
         session = self.session_factory()
-        analysisDB = session.query(AnalysisDB).filter_by(id=analysis.id).first()
+        analysisDB = session.query(AnalysisDB).filter_by(
+            id=analysis.id).first()
         dic = {}
-        if (analysisDB.idImage != analysis.idImage):
-            dic['idImage'] = analysis.idImage
+        if (analysisDB.idImage != analysis.image.id):
+            dic['idImage'] = analysis.image.id
+        if (analysisDB.idClassifier != analysis.classifier.id):
+            dic['idClassifier'] = analysis.classifier.id
         if (dic != {}):
             session.query(AnalysisDB).filter_by(id=analysis.id).update(dic)
             session.commit()
             session.flush()
             session.refresh(analysisDB)
-        
-        return Analysis(analysisDB.id,
-                        analysisDB.idImage)
+
+        return Analysis(
+            analysisDB.id,
+            image=Image(
+                analysisDB.image.id,
+                Disease(
+                    analysisDB.image.disease.id,
+                    Plant(
+                        analysisDB.image.disease.plant.id,
+                        analysisDB.image.disease.plant.scientificName,
+                        analysisDB.image.disease.plant.commonName),
+                    analysisDB.image.disease.scientificName,
+                    analysisDB.image.disease.commonName),
+                analysisDB.image.url,
+                analysisDB.image.description,
+                analysisDB.image.source,
+                analysisDB.image.size),
+            classifier=Classifier(
+                analysisDB.classifier.id,
+                Plant(
+                    analysisDB.classifier.plant.id,
+                    analysisDB.classifier.plant.scientificName,
+                    analysisDB.classifier.plant.commonName),
+                analysisDB.classifier.tag,
+                analysisDB.classifier.path),
+            user=User(
+                id=analysisDB.user.id,
+                idType=analysisDB.user.idType,
+                email=analysisDB.user.email,
+                username=analysisDB.user.username))
 
     def delete(self, analysis=Analysis()):
         """
@@ -53,10 +117,11 @@ class AnalysisRepository(Base):
         """
         status = False
         session = self.session_factory()
-        analysisDB = session.query(AnalysisDB).filter_by(id=analysis.id).first()
+        analysisDB = session.query(AnalysisDB).filter_by(
+            id=analysis.id).first()
         session.delete(analysisDB)
-        session.flush()
         session.commit()
+        session.flush()
         if (not session.query(AnalysisDB).filter_by(id=analysisDB.id).count()):
             status = True
         session.close()
@@ -68,16 +133,47 @@ class AnalysisRepository(Base):
         search by analysis
         """
         session = self.session_factory()
-        query = session.query(AnalysisDB).filter(AnalysisDB.idImage == analysis.idImage)
+        query = session.query(
+            AnalysisDB).filter(
+                and_(
+                    AnalysisDB.idImage == analysis.image.id,
+                    AnalysisDB.idClassifier == analysis.classifier.id))
         content = query.slice(offset, pageSize).all()
         total = query.count()
-        analyzes = []
+        analyses = []
         for analysisDB in content:
-            analyzes.append(Analysis(
-                                analysisDB.id,
-                                analysisDB.idImage))
-    
-        return {'total': total, 'content': analyzes}
+            analyses.append(
+                Analysis(
+                    analysisDB.id,
+                    image=Image(
+                        analysisDB.image.id,
+                        Disease(
+                            analysisDB.image.disease.id,
+                            Plant(
+                                analysisDB.image.disease.plant.id,
+                                analysisDB.image.disease.plant.scientificName,
+                                analysisDB.image.disease.plant.commonName),
+                            analysisDB.image.disease.scientificName,
+                            analysisDB.image.disease.commonName),
+                        analysisDB.image.url,
+                        analysisDB.image.description,
+                        analysisDB.image.source,
+                        analysisDB.image.size),
+                    classifier=Classifier(
+                        analysisDB.classifier.id,
+                        Plant(
+                            analysisDB.classifier.plant.id,
+                            analysisDB.classifier.plant.scientificName,
+                            analysisDB.classifier.plant.commonName),
+                        analysisDB.classifier.tag,
+                        analysisDB.classifier.path),
+                    user=User(
+                        id=analysisDB.user.id,
+                        idType=analysisDB.user.idType,
+                        email=analysisDB.user.email,
+                        username=analysisDB.user.username)))
+
+        return {'total': total, 'content': analyses}
 
     def searchByID(self, id):
         """
@@ -89,6 +185,43 @@ class AnalysisRepository(Base):
         if (analysisDB is None):
             raise Exception("Analysis not found!")
 
+        results = []
+        for result in analysisDB.analysis_results:
+            results.append(AnalysisResult(
+                id=result.id,
+                disease=Disease(
+                    id=result.disease.id,
+                    scientificName=result.disease.scientificName,
+                    commonName=result.disease.commonName),
+                frame=result.frame,
+                score=result.score))
         return Analysis(
-                    analysisDB.id,
-                    analysisDB.idImage)
+            id=analysisDB.id,
+            image=Image(
+                analysisDB.image.id,
+                Disease(
+                    analysisDB.image.disease.id,
+                    Plant(
+                        analysisDB.image.disease.plant.id,
+                        analysisDB.image.disease.plant.scientificName,
+                        analysisDB.image.disease.plant.commonName),
+                    analysisDB.image.disease.scientificName,
+                    analysisDB.image.disease.commonName),
+                analysisDB.image.url,
+                analysisDB.image.description,
+                analysisDB.image.source,
+                analysisDB.image.size),
+            classifier=Classifier(
+                analysisDB.classifier.id,
+                Plant(
+                    analysisDB.classifier.plant.id,
+                    analysisDB.classifier.plant.scientificName,
+                    analysisDB.classifier.plant.commonName),
+                analysisDB.classifier.tag,
+                analysisDB.classifier.path),
+            analysis_results=results,
+            user=User(
+                id=analysisDB.user.id,
+                idType=analysisDB.user.idType,
+                email=analysisDB.user.email,
+                username=analysisDB.user.username))
