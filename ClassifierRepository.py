@@ -29,7 +29,7 @@ class ClassifierRepository(Base):
 		return Classifier(classifierDB.id.
 				  classifierDB.idPlant,
 				  classifierDB.tag,
-				  classifierDB.tag)
+				  classifierDB.path)
 
 	def update(self, classifier = Classifier()):
 		"""

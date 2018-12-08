@@ -12,9 +12,11 @@ def test_insert():
     assert textRep.create(models.Text.Text(
                      0,
                      'test',
-                     'test tag',
+		     'test plant',
+		     'test status',
+                     'test attribute',
                      'test value',
-                     'test description')).value == 'test value'
+                     'test reference')).value == 'test value'
 
 def test_search():
     textRep = TextRepository(
@@ -38,12 +40,14 @@ def test_update():
     text = models.Text.Text(
                        0,
                        'test',
-                       'test tag',
+		       'test plant',
+		       'test status',
+                       'test attribute',
                        'test value',
-                       'test description 2000')
+                       'test reference 2000')
     text = textRep.update(text)
     print(type(text))
-    assert text.description == 'test description 2000'
+    assert text.description == 'test reference 2000'
 
 def test_delete():
     textRep = TextRepository(
@@ -55,9 +59,11 @@ def test_delete():
     text = models.Text.Text(
                        0,
                        'test language',
-                       'test tag',
+		       'test plant',
+		       'test status',
+                       'test attribute',
                        'test value',
-                       'test description')
+                       'test reference')
 
     result = textRep.delete(text)
     print(type(text))
