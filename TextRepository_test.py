@@ -59,8 +59,8 @@ def test_delete():
     text = models.Text.Text(
                        0,
                        'test language',
-		        'test plant',
-		        'test status',
+                       'test plant',
+                       'test status',
                        'test attribute',
                        'test value',
                        'test reference')

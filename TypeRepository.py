@@ -108,3 +108,4 @@ class TypeRepository(Base):
             types.append(Type(typeDB.id, typeDB.value, typeDB.description))
 
         return {'total': total, 'content': types}
+
