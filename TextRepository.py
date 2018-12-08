@@ -32,8 +32,8 @@ class TextRepository(Base):
         return Text(textDB.id,
                     textDB.language,
                     textDB.plant,
-		    textDB.status,
-		    textDB.attribute,
+                    textDB.status,
+                    textDB.attribute,
                     textDB.value,
                     textDB.reference)
 
@@ -47,10 +47,10 @@ class TextRepository(Base):
         dic = {}
         if (textDB.language != text.language):
             dic['language'] = text.language
- 	if (textDB.plant != text.plant):
-	    dic['plant'] = text.plant
-	if (textDB.status != text.status):
-	    dic['status'] = text.status
+        if (textDB.plant != text.plant):
+            dic['plant'] = text.plant
+        if (textDB.status != text.status):
+            dic['status'] = text.status
         if (textDB.attribute != text.attribute):
             dic['attribute'] = text.attribute
         if (textDB.value != text.value):
@@ -65,8 +65,8 @@ class TextRepository(Base):
 
         return Text(textDB.id,
                     textDB.language,
-		     textDB.plant,
-		     textDB.status,
+                    textDB.plant,
+                    textDB.status,
                     textDB.attribute,
                     textDB.value,
                     textDB.reference)
@@ -94,8 +94,8 @@ class TextRepository(Base):
         session = self.session_factory()
         query = session.query(TextDB).filter(and_(
                 TextDB.language.like('%'+text.language+'%'),
-	 	TextDB.plant.like('%'+text.plant+'%'),
-		TextDB.status.like('%'+text.status+'%'),
+                TextDB.plant.like('%'+text.plant+'%'),
+                TextDB.status.like('%'+text.status+'%'),
                 TextDB.attribute.like('%'+text.attribute+'%'),
                 TextDB.value.like('%'+text.value+'%'),
                 TextDB.reference.like('%'+text.reference+'%')))
@@ -106,8 +106,8 @@ class TextRepository(Base):
             texts.append(Text(
                     textDB.id,
                     textDB.language,
-		    textDB.plant,
-		    textDB.status,
+                    textDB.plant,
+                    textDB.status,
                     textDB.attribute,
                     textDB.value,
                     textDB.reference))
@@ -122,8 +122,8 @@ class TextRepository(Base):
         textDB = session.query(TextDB).get(textId)
         return Text(textDB.id,
                     textDB.language,
-		     textDB.plant,
-		     textDB.status,
+                    textDB.plant,
+                    textDB.status,
                     textDB.attribute,
                     textDB.value,
                     textDB.reference)

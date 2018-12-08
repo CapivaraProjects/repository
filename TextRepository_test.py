@@ -12,8 +12,8 @@ def test_insert():
     assert textRep.create(models.Text.Text(
                      0,
                      'test',
-		     'test plant',
-		     'test status',
+                     'test plant',
+                     'test status',
                      'test attribute',
                      'test value',
                      'test reference')).value == 'test value'
@@ -40,8 +40,8 @@ def test_update():
     text = models.Text.Text(
                        0,
                        'test',
-		       'test plant',
-		       'test status',
+                       'test plant',
+                       'test status',
                        'test attribute',
                        'test value',
                        'test reference 2000')
