@@ -31,9 +31,11 @@ class TextRepository(Base):
         session.commit()
         return Text(textDB.id,
                     textDB.language,
-                    textDB.tag,
+                    textDB.plant,
+                    textDB.status,
+                    textDB.attribute,
                     textDB.value,
-                    textDB.description)
+                    textDB.reference)
 
     def update(self, text=Text()):
         """
@@ -45,12 +47,16 @@ class TextRepository(Base):
         dic = {}
         if (textDB.language != text.language):
             dic['language'] = text.language
-        if (textDB.tag != text.tag):
-            dic['tag'] = text.tag
+        if (textDB.plant != text.plant):
+            dic['plant'] = text.plant
+        if (textDB.status != text.status):
+            dic['status'] = text.status
+        if (textDB.attribute != text.attribute):
+            dic['attribute'] = text.attribute
         if (textDB.value != text.value):
             dic['value'] = text.value
-        if (textDB.description != text.description):
-            dic['description'] = text.description
+        if (textDB.reference != text.reference):
+            dic['reference'] = text.reference
         if (dic != {}):
             session.query(TextDB).filter_by(id=text.id).update(dic)
             session.commit()
@@ -59,9 +65,11 @@ class TextRepository(Base):
 
         return Text(textDB.id,
                     textDB.language,
-                    textDB.tag,
+                    textDB.plant,
+                    textDB.status,
+                    textDB.attribute,
                     textDB.value,
-                    textDB.description)
+                    textDB.reference)
 
     def delete(self, text=Text()):
         """
@@ -86,9 +94,11 @@ class TextRepository(Base):
         session = self.session_factory()
         query = session.query(TextDB).filter(and_(
                 TextDB.language.like('%'+text.language+'%'),
-                TextDB.tag.like('%'+text.tag+'%'),
+                TextDB.plant.like('%'+text.plant+'%'),
+                TextDB.status.like('%'+text.status+'%'),
+                TextDB.attribute.like('%'+text.attribute+'%'),
                 TextDB.value.like('%'+text.value+'%'),
-                TextDB.description.like('%'+text.description+'%')))
+                TextDB.reference.like('%'+text.reference+'%')))
         content = query.slice(offset, pageSize).all()
         total = query.count()
         texts = []
@@ -96,9 +106,11 @@ class TextRepository(Base):
             texts.append(Text(
                     textDB.id,
                     textDB.language,
-                    textDB.tag,
+                    textDB.plant,
+                    textDB.status,
+                    textDB.attribute,
                     textDB.value,
-                    textDB.description))
+                    textDB.reference))
         return {'total': total, 'content': texts}
 
 
@@ -110,6 +122,8 @@ class TextRepository(Base):
         textDB = session.query(TextDB).get(textId)
         return Text(textDB.id,
                     textDB.language,
-                    textDB.tag,
+                    textDB.plant,
+                    textDB.status,
+                    textDB.attribute,
                     textDB.value,
-                    textDB.description)
+                    textDB.reference)
